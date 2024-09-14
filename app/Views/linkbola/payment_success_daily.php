@@ -42,7 +42,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Terimakasih atas pembelian product Link Nonton Bola</h5>
-                <p class="card-text">Berikut adalah link untuk pertandingan:</p>
+                <p class="card-text">Berikut adalah link untuk pertandingan hari ini :</p>
                 
                 <?php foreach($results as $result) : ?>
                 <a href="<?= $result['link']; ?>" class="btn btn-primary" target="_blank"><?= $result['link']; ?></a><br>
