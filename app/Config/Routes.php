@@ -9,6 +9,9 @@ $routes->get('testimonials', 'TestimoniController::index');
 $routes->get('cara-pesan', 'CaraPesanController::index');
 $routes->get('gallery', 'GalleryController::index');
 $routes->get('sosmed', 'SosmedController::index');
+$routes->get('joki', 'JokiController::index');
+$routes->get('premium', 'PremiumController::index');
+$routes->get('otp', 'OtpController::index');
 $routes->post('sosmed/hitung', 'SosmedController::hitung');
 $routes->addRedirect('portfolio', 'cara-pesan');
 
@@ -74,4 +77,65 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
         $routes->get('toggle/(:num)', 'Admin\GaleriController::toggle/$1');
         $routes->get('delete/(:num)', 'Admin\GaleriController::delete/$1');
     });
+
+    // Premium
+    $routes->group('premium', static function ($routes) {
+        $routes->get('/', 'Admin\PremiumController::index');
+
+        // Produk
+        $routes->get('produk',              'Admin\PremiumController::produk');
+        $routes->get('produk/create',       'Admin\PremiumController::produkForm');
+        $routes->get('produk/edit/(:num)',  'Admin\PremiumController::produkForm/$1');
+        $routes->post('produk/save',        'Admin\PremiumController::produkSave');
+        $routes->post('produk/save/(:num)', 'Admin\PremiumController::produkSave/$1');
+        $routes->get('produk/delete/(:num)','Admin\PremiumController::produkDelete/$1');
+
+        // Durasi
+        $routes->get('durasi',              'Admin\PremiumController::durasi');
+        $routes->get('durasi/create',       'Admin\PremiumController::durasiForm');
+        $routes->get('durasi/edit/(:num)',  'Admin\PremiumController::durasiForm/$1');
+        $routes->post('durasi/save',        'Admin\PremiumController::durasiSave');
+        $routes->post('durasi/save/(:num)', 'Admin\PremiumController::durasiSave/$1');
+        $routes->get('durasi/delete/(:num)','Admin\PremiumController::durasiDelete/$1');
+    });
+
+    $routes->group('otp', static function ($routes) {
+        $routes->get('/',             'Admin\OtpController::index');
+        $routes->get('create',        'Admin\OtpController::form');
+        $routes->get('edit/(:num)',   'Admin\OtpController::form/$1');
+        $routes->post('save',         'Admin\OtpController::save');
+        $routes->post('save/(:num)',  'Admin\OtpController::save/$1');
+        $routes->get('toggle/(:num)', 'Admin\OtpController::toggle/$1');
+        $routes->get('delete/(:num)', 'Admin\OtpController::delete/$1');
+    });
+
+    $routes->group('statistik', static function ($routes) {
+        $routes->get('/',            'Admin\StatistikController::index');
+        $routes->get('create',       'Admin\StatistikController::form');
+        $routes->get('edit/(:num)',  'Admin\StatistikController::form/$1');
+        $routes->post('save',        'Admin\StatistikController::save');
+        $routes->post('save/(:num)', 'Admin\StatistikController::save/$1');
+        $routes->get('delete/(:num)','Admin\StatistikController::delete/$1');
+    });
+
+    $routes->group('client', static function ($routes) {
+        $routes->get('/',            'Admin\ClientController::index');
+        $routes->get('create',       'Admin\ClientController::form');
+        $routes->get('edit/(:num)',  'Admin\ClientController::form/$1');
+        $routes->post('save',        'Admin\ClientController::save');
+        $routes->post('save/(:num)', 'Admin\ClientController::save/$1');
+        $routes->get('delete/(:num)','Admin\ClientController::delete/$1');
+    });
+
+    $routes->group('promo', static function ($routes) {
+        $routes->get('/',            'Admin\PromoController::index');
+        $routes->get('create',       'Admin\PromoController::form');
+        $routes->get('edit/(:num)',  'Admin\PromoController::form/$1');
+        $routes->post('save',        'Admin\PromoController::save');
+        $routes->post('save/(:num)', 'Admin\PromoController::save/$1');
+        $routes->get('delete/(:num)','Admin\PromoController::delete/$1');
+    });
+
+    $routes->get('pengaturan',       'Admin\PengaturanController::index');
+    $routes->post('pengaturan/save', 'Admin\PengaturanController::save');
 });

@@ -3,21 +3,19 @@
 namespace App\Controllers;
 
 use App\Models\LayananModel;
-use App\Models\PromoModel;
 use App\Models\ClientModel;
 use App\Models\PengaturanModel;
+use App\Models\StatistikModel;
 
 class HomeController extends BaseController
 {
     public function index()
     {
-        $layananModel = new LayananModel();
-        $clientModel  = new ClientModel();
-
         $data = [
             'title'      => 'Zippy Store - Solusi Digital Termudah & Termurah',
-            'layanan'    => $layananModel->getActive(),
-            'clients'    => $clientModel->getActive(),
+            'layanan'    => (new LayananModel())->getActive(),
+            'clients'    => (new ClientModel())->getActive(),
+            'statistik'  => (new StatistikModel())->getActive(),
             'pengaturan' => (new PengaturanModel())->getSettings(),
         ];
 

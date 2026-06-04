@@ -21,29 +21,54 @@
   <aside class="sidebar" id="sidebar">
     <a href="<?= site_url('admin/sosmed') ?>" class="brand">Zippy<span>.</span></a>
 
-    <div class="sb-label">Sosmed Boost</div>
+    <!-- ===== LAYANAN ===== -->
+    <div class="sb-label">Layanan</div>
     <nav class="nav flex-column">
-      <a class="nav-link <?= isActive('admin/sosmed', $current) === 'active' && !str_contains($current,'platform') && !str_contains($current,'layanan') && !str_contains($current,'paket') && !str_contains($current,'kalkulator') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed') ?>">📊 Dashboard</a>
-      <a class="nav-link <?= str_contains($current,'platform') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed/platform') ?>">🌐 Platform</a>
-      <a class="nav-link <?= str_contains($current,'layanan') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed/layanan') ?>">🧩 Layanan</a>
-      <a class="nav-link <?= str_contains($current,'paket') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed/paket') ?>">📦 Paket</a>
-      <a class="nav-link <?= str_contains($current,'kalkulator') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed/kalkulator') ?>">🧮 Kalkulator</a>
+      <a class="nav-link <?= str_contains($current,'admin/sosmed') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed') ?>">🚀 Sosmed Boost</a>
+      <a class="nav-link <?= str_contains($current,'admin/premium') ? 'active' : '' ?>" href="<?= site_url('admin/premium') ?>">🎬 App Premium</a>
+      <a class="nav-link <?= str_contains($current,'admin/otp') ? 'active' : '' ?>" href="<?= site_url('admin/otp') ?>">📱 Nomor OTP</a>
     </nav>
 
-    
+    <!-- Sub-menu Sosmed Boost (muncul saat di halaman sosmed) -->
+    <?php if (str_contains($current, 'admin/sosmed')): ?>
+      <div class="sb-label">Menu Sosmed</div>
+      <nav class="nav flex-column">
+        <a class="nav-link <?= $current === 'admin/sosmed' ? 'active' : '' ?>" href="<?= site_url('admin/sosmed') ?>">📊 Dashboard</a>
+        <a class="nav-link <?= str_contains($current,'platform') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed/platform') ?>">🌐 Platform</a>
+        <a class="nav-link <?= str_contains($current,'layanan') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed/layanan') ?>">🧩 Layanan</a>
+        <a class="nav-link <?= str_contains($current,'paket') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed/paket') ?>">📦 Paket</a>
+        <a class="nav-link <?= str_contains($current,'kalkulator') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed/kalkulator') ?>">🧮 Kalkulator</a>
+      </nav>
+    <?php endif; ?>
 
+    <!-- Sub-menu App Premium (muncul saat di halaman premium) -->
+    <?php if (str_contains($current, 'admin/premium')): ?>
+      <div class="sb-label">Menu Premium</div>
+      <nav class="nav flex-column">
+        <a class="nav-link <?= $current === 'admin/premium' ? 'active' : '' ?>" href="<?= site_url('admin/premium') ?>">📊 Dashboard</a>
+        <a class="nav-link <?= str_contains($current,'produk') ? 'active' : '' ?>" href="<?= site_url('admin/premium/produk') ?>">📦 Produk</a>
+        <a class="nav-link <?= str_contains($current,'durasi') ? 'active' : '' ?>" href="<?= site_url('admin/premium/durasi') ?>">⏱️ Durasi & Harga</a>
+      </nav>
+    <?php endif; ?>
+
+    <!-- ===== KONTEN ===== -->
     <div class="sb-label">Konten</div>
     <nav class="nav flex-column">
       <a class="nav-link <?= str_contains($current,'admin/testimoni') ? 'active' : '' ?>" href="<?= site_url('admin/testimoni') ?>">💬 Testimoni</a>
       <a class="nav-link <?= str_contains($current,'admin/galeri') ? 'active' : '' ?>" href="<?= site_url('admin/galeri') ?>">🖼️ Galeri</a>
+      <a class="nav-link <?= str_contains($current,'admin/statistik') ? 'active' : '' ?>" href="<?= site_url('admin/statistik') ?>">📊 Statistik</a>
+      <a class="nav-link <?= str_contains($current,'admin/client') ? 'active' : '' ?>" href="<?= site_url('admin/client') ?>">🤝 Client</a>
+      <a class="nav-link <?= str_contains($current,'admin/promo') ? 'active' : '' ?>" href="<?= site_url('admin/promo') ?>">🎁 Promo</a>
     </nav>
 
-    <div class="sb-label">Lainnya</div>
-    
+    <!-- ===== PENGATURAN ===== -->
+    <div class="sb-label">Pengaturan</div>
     <nav class="nav flex-column">
+      <a class="nav-link <?= str_contains($current,'admin/pengaturan') ? 'active' : '' ?>" href="<?= site_url('admin/pengaturan') ?>">⚙️ Pengaturan</a>
       <a class="nav-link" href="<?= site_url('/') ?>" target="_blank">🏠 Lihat Website</a>
       <a class="nav-link" href="<?= site_url('logout') ?>">🚪 Logout</a>
     </nav>
+
   </aside>
 
   <div class="sb-backdrop" id="sbBackdrop"></div>

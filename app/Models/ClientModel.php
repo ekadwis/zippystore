@@ -13,11 +13,20 @@ class ClientModel extends Model
     protected $useTimestamps    = false;
 
     protected $allowedFields = [
-        'nama', 'logo', 'deskripsi', 'is_active', 'created_at',
+        'nama',
+        'logo',
+        'deskripsi',
+        'is_active',
+        'created_at',
     ];
 
     public function getActive()
     {
         return $this->where('is_active', 1)->orderBy('id', 'DESC')->findAll();
+    }
+
+    public function getAll()
+    {
+        return $this->orderBy('id', 'DESC')->findAll();
     }
 }

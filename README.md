@@ -1,69 +1,155 @@
-# CodeIgniter 4 Application Starter
+# 🛒 Zippy Store
 
-## What is CodeIgniter?
+> Website toko digital multi-layanan — **Solusi Digital Termudah & Termurah!**
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+Zippy Store adalah website katalog toko digital yang menjual berbagai layanan: **Joki Tugas**, **App Premium**, **Sosmed Boost**, dan **Nomor OTP**. Semua transaksi diarahkan ke WhatsApp admin (tanpa payment gateway). Dilengkapi dashboard admin untuk mengelola seluruh konten.
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+![CodeIgniter](https://img.shields.io/badge/CodeIgniter-4-EF4223?logo=codeigniter&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.1+-777BB4?logo=php&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-phpMyAdmin-4479A1?logo=mysql&logoColor=white)
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+---
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+## ✨ Fitur
 
-## Installation & updates
+### Sisi Pengunjung
+- 🏠 **Landing page** — hero, daftar layanan, statistik, cara pesan, promo, client
+- 📝 **Joki Tugas** — form pemesanan langsung terkirim ke WhatsApp dengan format rapi
+- 🎬 **App Premium** — katalog akun premium (Netflix, Spotify, YouTube, dll) dengan pilihan durasi
+- 🚀 **Sosmed Boost** — kalkulator harga custom (hitung sendiri jumlah yang diinginkan) + daftar paket
+- 📱 **Nomor OTP** — daftar harga sewa nomor OTP berbagai aplikasi
+- 💬 **Testimonials** — galeri foto testimoni + integrasi Telegram
+- 🖼️ **Gallery** — galeri masonry dengan search & filter kategori
+- 📋 **Cara Pesan** — panduan pemesanan + statistik pencapaian
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+### Sisi Admin (Dashboard)
+- 🔒 Login admin terproteksi (session + filter auth)
+- 🛠️ **CRUD lengkap** untuk semua modul: Sosmed Boost, App Premium, Nomor OTP, Testimoni, Galeri, Statistik, Client, Promo
+- ⚙️ Halaman **Pengaturan** untuk mengatur info toko, kontak, sosial media, logo & favicon
+- 🧮 Kalkulator harga Sosmed Boost di dashboard
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+---
 
-## Setup
+## 🧰 Tech Stack
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+| Komponen | Teknologi |
+|----------|-----------|
+| Framework | CodeIgniter 4 |
+| Bahasa | PHP 8.1+ |
+| Database | MySQL (phpMyAdmin) |
+| Front-end | Bootstrap 5.3.3 (CDN) |
+| Font | Inter (Google Fonts) |
+| Tema | Dark mode, accent ungu-biru |
 
-## Important Change with index.php
+---
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+## 🚀 Instalasi
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+### Prasyarat
+- PHP 8.1 atau lebih baru
+- Composer
+- MySQL / MariaDB (phpMyAdmin)
 
-**Please** read the user guide for a better explanation of how CI4 works!
+### Langkah
 
-## Repository Management
+```bash
+# 1. Clone repository
+git clone https://github.com/USERNAME/zippystore.git
+cd zippystore
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+# 2. Install dependency
+composer install
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+# 3. Salin file environment
+cp env .env
+```
 
-## Server Requirements
+Edit file `.env`, sesuaikan baris berikut:
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+```dotenv
+CI_ENVIRONMENT = development
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+app.baseURL = 'http://localhost:8080/'
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+database.default.hostname = localhost
+database.default.database = zippystore
+database.default.username = root
+database.default.password =
+database.default.DBDriver = MySQLi
+```
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+```bash
+# 4. Buat database bernama "zippystore" di phpMyAdmin,
+#    lalu import file SQL (lihat folder /database atau jalankan query manual)
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+# 5. Jalankan server lokal
+php spark serve
+```
+
+Buka browser ke **http://localhost:8080**
+
+---
+
+## 🔑 Akses Admin
+
+Dashboard admin ada di **`/login`** lalu diarahkan ke **`/admin/sosmed`**.
+
+Untuk membuat akun admin, generate hash password lalu masukkan ke tabel `admin`:
+
+```bash
+php -r "echo password_hash('passwordmu', PASSWORD_DEFAULT);"
+```
+
+```sql
+INSERT INTO admin (username, password) VALUES ('admin', '<<HASH_HASIL_DI_ATAS>>');
+```
+
+---
+
+## ⚙️ Konfigurasi Awal (Penting!)
+
+Setelah instalasi, login ke dashboard dan lakukan:
+
+1. **Buka `/admin/pengaturan`** — isi nama toko, nomor WhatsApp, email, link sosial media, logo & favicon. Nomor WhatsApp di sini dipakai oleh semua tombol "Order" di seluruh situs.
+2. **Isi data konten** lewat dashboard: testimoni, galeri, client, promo, statistik.
+3. **Lengkapi harga** App Premium (Spotify & YouTube masih placeholder) dan tambah produk OTP sesuai kebutuhan.
+
+> 💡 **Penyimpanan gambar:** semua gambar (testimoni, galeri, logo) menggunakan **URL online** (mis. [postimg](https://postimages.org/), Cloudinary, imgbb), bukan upload ke server — untuk menghemat kuota disk hosting. Cukup tempel URL gambar di form admin.
+
+---
+
+## 📁 Struktur Folder
+
+```
+app/
+├── Config/         # Routes, Filters, Database
+├── Controllers/    # Controller publik
+│   └── Admin/      # Controller dashboard admin
+├── Filters/        # AuthFilter (proteksi admin)
+├── Helpers/        # sosmed_helper (rumus harga)
+├── Models/         # Model untuk tiap tabel
+└── Views/
+    ├── template/   # header & footer
+    ├── ...         # view publik
+    └── admin/      # view dashboard
+public/
+├── css/            # style.css (publik), admin-sosmed.css (admin)
+└── js/             # script.js
+```
+
+---
+
+## 📚 Dokumentasi
+
+Spesifikasi lengkap (database, modul, routing, business logic, konvensi) tersedia di dokumen **PRD Final** project ini. Sangat disarankan dibaca sebelum melakukan pengembangan lebih lanjut.
+
+---
+
+## 📝 Lisensi
+
+Project ini dibuat untuk keperluan Zippy Store. Seluruh hak cipta dimiliki oleh pemilik toko.
+
+---
+
+<p align="center">Dibuat dengan ❤️ untuk Zippy Store</p>

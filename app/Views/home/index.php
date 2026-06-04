@@ -27,10 +27,24 @@
               <h3 class="h5"><?= esc($l['nama']) ?></h3>
               <p class="text-muted-2 small"><?= esc($l['deskripsi']) ?></p>
               <?php
-              // Arahkan layanan Sosmed Boost ke halaman khusus, lainnya ke gallery
-              $linkLayanan = ($l['slug'] === 'sosmed-boost')
-                ? base_url('sosmed')
-                : base_url('gallery?kategori=' . esc($l['slug'], 'url'));
+              // Arahkan tiap layanan ke halaman khususnya
+              switch ($l['slug']) {
+                case 'sosmed-boost':
+                  $linkLayanan = base_url('sosmed');
+                  break;
+                case 'joki-tugas':
+                  $linkLayanan = base_url('joki');
+                  break;
+                case 'app-premium':
+                  $linkLayanan = base_url('premium');
+                  break;
+                case 'nomor-otp':
+                  $linkLayanan = base_url('otp');
+                  break;
+                default:
+                  $linkLayanan = base_url('gallery?kategori=' . esc($l['slug'], 'url'));
+                  break;
+              }
               ?>
               <a href="<?= $linkLayanan ?>" class="btn btn-outline-accent btn-sm">Lihat Selengkapnya</a>
             </div>
@@ -46,29 +60,23 @@
 </section>
 
 <!-- STATISTIK (landing) -->
+<?php if (!empty($statistik)): ?>
 <section class="section pt-0">
   <div class="container">
     <div class="row g-4">
-      <?php
-        $statHome = [
-          ['😊','1.200+','Pelanggan Puas'],
-          ['📦','5.000+','Pesanan Selesai'],
-          ['🏆','4','Tahun Pengalaman'],
-          ['⚡','24 Jam','Respon Cepat'],
-        ];
-        foreach ($statHome as $s):
-      ?>
+      <?php foreach ($statistik as $s): ?>
         <div class="col-6 col-lg-3">
           <div class="stat-box reveal">
-            <div class="s-ico"><?= $s[0] ?></div>
-            <div class="s-num text-grad"><?= $s[1] ?></div>
-            <div class="s-lbl"><?= $s[2] ?></div>
+            <div class="s-ico"><?= esc($s['icon']) ?></div>
+            <div class="s-num text-grad"><?= esc($s['angka']) ?></div>
+            <div class="s-lbl"><?= esc($s['label']) ?></div>
           </div>
         </div>
       <?php endforeach; ?>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- CARA PESAN RINGKAS (landing) -->
 <section class="section pt-0">
@@ -77,13 +85,13 @@
     <p class="section-sub reveal">Gampang, cuma 4 langkah</p>
     <div class="row g-4">
       <?php
-        $langkahHome = [
-          [1,'Pilih Layanan','Tentukan produk yang kamu butuhkan.'],
-          [2,'Chat WhatsApp','Hubungi admin & sampaikan detail pesanan.'],
-          [3,'Pembayaran','Bayar sesuai harga yang disepakati.'],
-          [4,'Diproses','Pesanan langsung kami kerjakan.'],
-        ];
-        foreach ($langkahHome as $l):
+      $langkahHome = [
+        [1, 'Pilih Layanan', 'Tentukan produk yang kamu butuhkan.'],
+        [2, 'Chat WhatsApp', 'Hubungi admin & sampaikan detail pesanan.'],
+        [3, 'Pembayaran', 'Bayar sesuai harga yang disepakati.'],
+        [4, 'Diproses', 'Pesanan langsung kami kerjakan.'],
+      ];
+      foreach ($langkahHome as $l):
       ?>
         <div class="col-12 col-md-6 col-lg-3">
           <div class="step-card reveal">
