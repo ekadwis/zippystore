@@ -54,4 +54,18 @@
   </div>
 </section>
 
+<!-- REGULASI -->
+<section class="section pt-0">
+  <div class="container">
+    <div class="zp-card p-4 p-md-5 reveal" style="border-left:4px solid var(--secondary)">
+      <h2 class="h5 mb-3">📋 Rules &amp; Regulasi</h2>
+      <ul class="ketentuan-list">
+        <?php foreach ($regulasi as $r): ?>
+          <li><span class="k-ico">✶</span><span><?= esc($r) ?></span></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+  </div>
+</section>
+
 <?= $this->include('template/footer') ?>
