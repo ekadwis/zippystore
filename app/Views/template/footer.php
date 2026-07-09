@@ -18,6 +18,7 @@ $namaToko = $set['nama_toko'] ?? 'Zippy Store';
           <a href="<?= base_url('testimonials') ?>">Testimonials</a>
           <a href="<?= base_url('cara-pesan') ?>">Cara Pesan</a>
           <a href="<?= base_url('gallery') ?>">Gallery</a>
+          <a href="<?= base_url('tutorial') ?>">Tutorial</a>
         </div>
       </div>
       <div class="col-md-3">

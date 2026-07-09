@@ -6,6 +6,8 @@ use App\Models\LayananModel;
 use App\Models\ClientModel;
 use App\Models\PengaturanModel;
 use App\Models\StatistikModel;
+use App\Models\GaleriModel;
+use App\Models\TestimoniModel;
 
 class HomeController extends BaseController
 {
@@ -17,6 +19,8 @@ class HomeController extends BaseController
             'clients'    => (new ClientModel())->getActive(),
             'statistik'  => (new StatistikModel())->getActive(),
             'pengaturan' => (new PengaturanModel())->getSettings(),
+            'galeri'     => (new GaleriModel())->getFiltered(),
+            'testimoni'  => (new TestimoniModel())->getActive(),
         ];
 
         return view('home/index', $data);

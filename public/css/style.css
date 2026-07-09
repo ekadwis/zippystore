@@ -228,3 +228,162 @@ html{scroll-behavior:smooth}
 }
 .ketentuan-list li:last-child{border-bottom:none}
 .ketentuan-list .k-ico{color:var(--accent-2);flex-shrink:0;font-size:16px;margin-top:1px}
+
+/* ===== TUTORIAL ===== */
+
+/* Listing page – cards */
+.tut-card{
+  background:var(--zp-card);border:1px solid var(--zp-border);border-radius:16px;
+  height:100%;transition:.3s ease;
+}
+.tut-card:hover{transform:translateY(-6px);border-color:var(--zp-accent);box-shadow:0 16px 40px rgba(99,102,241,.18)}
+.tut-card-soon{opacity:.55;cursor:default}
+.tut-card-soon:hover{transform:none;border-color:var(--zp-border);box-shadow:none}
+.tut-icon{font-size:40px;line-height:1}
+.tut-badge span{
+  display:inline-block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  background:rgba(99,102,241,.18);color:var(--zp-accent);border-radius:999px;padding:3px 12px;
+}
+.tut-title{font-size:18px;font-weight:700;margin-bottom:10px;color:var(--zp-text)}
+.tut-desc{font-size:14px;color:var(--zp-text-2);line-height:1.7;margin-bottom:12px}
+.tut-meta{display:flex;gap:14px;font-size:13px;color:var(--zp-text-2)}
+.tut-cta{font-size:14px;font-weight:600;color:var(--zp-accent)}
+.tut-cta span{transition:.2s}
+.tut-card:hover .tut-cta span{margin-left:4px}
+
+/* Detail page – hero icon */
+.tut-hero-icon{
+  width:160px;height:160px;border-radius:32px;margin:0 auto;
+  background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(168,85,247,.2));
+  border:1px solid var(--zp-border);display:flex;align-items:center;justify-content:center;
+  font-size:72px;
+}
+
+/* Tutorial section blocks */
+.tut-section{
+  background:var(--zp-card);border:1px solid var(--zp-border);border-radius:16px;
+  padding:28px 32px;margin-bottom:28px;
+}
+.tut-section-header{display:flex;align-items:flex-start;gap:18px;margin-bottom:28px}
+.tut-section-num{
+  width:48px;height:48px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--zp-accent),var(--zp-accent-2));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:20px;color:#fff;
+}
+.tut-section-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.tut-section-sub{font-size:13px;color:var(--zp-text-2);margin:0}
+
+/* Steps list */
+.tut-steps{display:flex;flex-direction:column;gap:0;padding-left:4px}
+.tut-step{display:flex;gap:18px;padding-bottom:24px;position:relative}
+.tut-step:not(:last-child)::before{
+  content:'';position:absolute;left:11px;top:24px;bottom:0;
+  width:2px;background:var(--zp-border);
+}
+.tut-step-dot{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;margin-top:2px;
+  background:var(--zp-accent);border:3px solid var(--zp-card);
+  box-shadow:0 0 0 2px var(--zp-accent);
+}
+.tut-step-content{flex:1;min-width:0}
+.tut-step-content h4{font-size:16px;font-weight:600;margin-bottom:8px}
+.tut-step-content p{font-size:14px;color:var(--zp-text-2);line-height:1.7;margin-bottom:0}
+.tut-step-content code{background:rgba(99,102,241,.15);color:var(--zp-accent);padding:2px 6px;border-radius:6px;font-size:13px}
+
+/* Link box (Bot link) */
+.tut-link-box{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.3);
+  border-radius:12px;padding:14px 16px;margin-top:10px;transition:.2s;
+}
+.tut-link-box:hover{background:rgba(99,102,241,.14);border-color:var(--zp-accent)}
+.tut-link-icon{font-size:26px;flex-shrink:0}
+.tut-link-text{flex:1;display:flex;flex-direction:column}
+.tut-link-text strong{font-size:14px;color:var(--zp-text)}
+.tut-link-text small{font-size:12px;color:var(--zp-text-2)}
+.tut-link-arrow{font-size:18px;color:var(--zp-accent);font-weight:700}
+
+/* Warning box */
+.tut-warning{
+  display:flex;gap:10px;align-items:flex-start;
+  background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.25);
+  border-radius:10px;padding:12px 14px;margin-top:10px;
+  font-size:13px;color:#ca8a04;line-height:1.6;
+}
+
+/* Success box */
+.tut-success{
+  display:flex;gap:10px;align-items:center;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);
+  border-radius:10px;padding:12px 14px;margin-top:10px;
+  font-size:14px;color:#16a34a;font-weight:500;
+}
+
+/* Flow steps (inline) */
+.tut-flow{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  background:var(--zp-bg);border:1px solid var(--zp-border);
+  border-radius:10px;padding:12px 16px;margin-top:10px;
+}
+.tut-flow-item{
+  font-size:13px;font-weight:600;color:var(--zp-text);
+  background:rgba(99,102,241,.15);border-radius:6px;padding:4px 10px;
+}
+.tut-flow-sep{font-size:14px;color:var(--zp-text-2)}
+
+/* Code block */
+.tut-code-block{
+  background:var(--zp-bg);border:1px solid var(--zp-border);
+  border-radius:10px;margin-top:10px;overflow:hidden;
+}
+.tut-code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;background:rgba(255,255,255,.04);border-bottom:1px solid var(--zp-border);
+  font-size:12px;color:var(--zp-text-2);
+}
+.tut-code-block code{
+  display:block;padding:14px 16px;font-size:13px;
+  color:var(--zp-accent);word-break:break-all;
+}
+.tut-copy-btn{
+  background:rgba(99,102,241,.15);border:none;color:var(--zp-accent);
+  font-size:12px;font-weight:600;border-radius:6px;padding:3px 10px;cursor:pointer;transition:.2s;
+}
+.tut-copy-btn:hover{background:var(--zp-accent);color:#fff}
+
+/* Tips section */
+.tut-tips{
+  background:var(--zp-card);border:1px solid var(--zp-border);border-radius:16px;
+  padding:28px 32px;margin-bottom:28px;
+}
+.tut-tips-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.tut-tips-header span{font-size:28px}
+.tut-tips-header h3{font-size:18px;font-weight:700;margin:0}
+.tut-tip-item{
+  display:flex;gap:16px;padding:18px 0;
+  border-top:1px solid var(--zp-border);
+}
+.tut-tip-icon{font-size:28px;flex-shrink:0;margin-top:2px}
+.tut-tip-item h5{font-size:15px;font-weight:600;margin-bottom:6px}
+.tut-tip-item p{font-size:14px;color:var(--zp-text-2);margin:0;line-height:1.7}
+
+/* Price box */
+.tut-price-box{
+  display:inline-flex;flex-direction:column;gap:4px;
+  background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);
+  border-radius:12px;padding:14px 20px;
+}
+.tut-price{font-size:26px;font-weight:800;color:var(--zp-text)}
+.tut-price-note{font-size:13px;color:var(--zp-text-2)}
+
+/* Breadcrumb dark */
+.breadcrumb-item+.breadcrumb-item::before{color:var(--zp-text-2)}
+.breadcrumb-item.active{color:var(--zp-text-2)}
+
+@media(max-width:640px){
+  .tut-section{padding:20px 18px}
+  .tut-tips{padding:20px 18px}
+  .tut-hero-icon{width:110px;height:110px;font-size:48px}
+  .tut-flow{gap:6px}
+}

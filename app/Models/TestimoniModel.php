@@ -10,7 +10,7 @@ class TestimoniModel extends Model
     protected $primaryKey    = 'id';
     protected $returnType    = 'array';
     protected $useTimestamps = false;
-    protected $allowedFields = ['nama', 'isi', 'gambar', 'tanggal', 'is_active', 'created_at'];
+    protected $allowedFields = ['nama', 'isi', 'gambar', 'tanggal', 'is_active', 'created_at', 'telegram_file_id', 'telegram_msg_id'];
 
     // Front-end: hanya yang aktif
     public function getActive()

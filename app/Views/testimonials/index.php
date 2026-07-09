@@ -1,30 +1,16 @@
 <?= $this->include('template/header') ?>
 
 <?php
-  $telegram = $telegramLink ?? 'https://t.me/klddies';
+    $telegram    = $telegramLink ?? 'https://t.me/klddies';
+    $fromTg      = $fromTelegram ?? false;
 
-  // Helper kecil: kalau gambar berupa URL penuh pakai langsung, kalau path -> base_url()
-  function testiSrc($g) {
-      if (empty($g)) return '';
-      return (str_starts_with($g, 'http://') || str_starts_with($g, 'https://'))
-          ? $g : base_url($g);
-  }
+    function testiSrc($g) {
+        if (empty($g)) return '';
+        return (str_starts_with($g, 'http://') || str_starts_with($g, 'https://'))
+            ? $g : base_url($g);
+    }
 
-  // Dummy portrait sementara (placeholder bertuliskan tanggal + Testimoni Zippy Store).
-  // Ganti dengan URL foto asli (mis. dari postimg) di tabel `testimoni`.
-  $dummy = [];
-  $tgl = ['12 Jan 2024','15 Jan 2024','18 Jan 2024','22 Jan 2024','25 Jan 2024','01 Feb 2024',
-          '04 Feb 2024','09 Feb 2024','13 Feb 2024','17 Feb 2024','20 Feb 2024','26 Feb 2024',
-          '02 Mar 2024','06 Mar 2024','11 Mar 2024','15 Mar 2024','19 Mar 2024','24 Mar 2024'];
-  foreach ($tgl as $i => $t) {
-      $dummy[] = [
-          'nama'    => 'Customer ' . ($i + 1),
-          'gambar'  => 'https://placehold.co/360x640/1A1A1A/8B5CF6/png?text=Testimoni%0AZippy+Store%0A%0A' . rawurlencode($t),
-          'tanggal' => $t,
-      ];
-  }
-  // Pakai data DB kalau ada, kalau kosong tampilkan dummy
-  $list = !empty($testimoni) ? $testimoni : $dummy;
+    $list = !empty($testimoni) ? $testimoni : [];
 ?>
 
 <!-- HERO -->
@@ -43,9 +29,20 @@
     <div class="telegram-banner d-flex align-items-center gap-3 flex-wrap reveal">
       <div class="tg-ico">✈️</div>
       <div class="flex-grow-1">
-        <h3 class="h6 mb-1">Semua testimoni asli ada di Telegram kami</h3>
+        <h3 class="h6 mb-1">
+          <?php if ($fromTg): ?>
+            Menampilkan 16 foto terbaru langsung dari channel Telegram kami
+          <?php else: ?>
+            Semua testimoni asli ada di Telegram kami
+          <?php endif; ?>
+        </h3>
         <p class="text-muted-2 small mb-0">
-          Foto di bawah ini hanya sebagian. Arsip lengkap &amp; real-time bisa kamu cek langsung di channel Telegram kami.
+          <?php if ($fromTg): ?>
+            Foto diperbarui otomatis setiap 30 menit dari
+            <a href="<?= esc($telegram) ?>" target="_blank" class="text-accent"><?= esc($telegram) ?></a>.
+          <?php else: ?>
+            Arsip lengkap & real-time bisa kamu cek langsung di channel Telegram kami.
+          <?php endif; ?>
         </p>
       </div>
       <a href="<?= esc($telegram) ?>" target="_blank" class="btn btn-accent px-4">Buka Telegram</a>
@@ -61,7 +58,10 @@
         <?php foreach ($list as $t): ?>
           <?php $src = testiSrc($t['gambar']); ?>
           <div class="testi-photo reveal" data-full="<?= esc($src, 'attr') ?>">
-            <img src="<?= esc($src, 'attr') ?>" alt="Testimoni <?= esc($t['nama'] ?? 'Zippy Store') ?>" loading="lazy">
+            <img src="<?= esc($src, 'attr') ?>"
+                 alt="Testimoni <?= esc($t['nama'] ?? 'Zippy Store') ?>"
+                 loading="lazy"
+                 onerror="this.closest('.testi-photo').style.display='none'">
             <div class="zoom-ico">🔍</div>
           </div>
         <?php endforeach; ?>
@@ -70,17 +70,23 @@
       <!-- See all -> Telegram -->
       <div class="text-center mt-5 reveal">
         <p class="text-muted-2 small mb-3">
-          <?php if (!empty($totalTesti) && $totalTesti > 18): ?>
-            Menampilkan 18 dari <?= number_format($totalTesti, 0, ',', '.') ?> testimoni.
-          <?php endif; ?>
+          Menampilkan <?= count($list) ?> foto terbaru.
           Mau lihat semuanya?
         </p>
         <a href="<?= esc($telegram) ?>" target="_blank" class="btn btn-accent btn-lg px-5">
           ✈️ Lihat Semua di Telegram
         </a>
       </div>
+
     <?php else: ?>
-      <div class="empty reveal"><div class="em">💬</div>Belum ada testimoni.</div>
+      <!-- Fallback: tidak ada foto dari Telegram -->
+      <div class="empty reveal">
+        <div class="em">📷</div>
+        <p class="mb-3">Foto testimoni sedang dimuat dari Telegram…</p>
+        <a href="<?= esc($telegram) ?>" target="_blank" class="btn btn-accent px-4">
+          ✈️ Cek Langsung di Telegram
+        </a>
+      </div>
     <?php endif; ?>
   </div>
 </section>
@@ -89,7 +95,7 @@
 <section class="pt-0">
   <div class="container">
     <div class="testi-notice reveal">
-      <h4>⚠️ Pemberitahuan Keaslian &amp; Hak Cipta</h4>
+      <h4>⚠️ Pemberitahuan Keaslian & Hak Cipta</h4>
       <p>
         Seluruh testimoni dan screenshot yang ditampilkan di halaman ini adalah <strong>asli</strong> dan merupakan
         hak milik Zippy Store. Dilarang keras mengambil, menyalin, mengunduh, mengedit, atau menggunakan kembali
@@ -122,7 +128,7 @@
 
 <script>
   // Lightbox zoom (pakai Bootstrap modal yang sudah ada di footer bundle)
-  const modalEl = document.getElementById('testiModal');
+  const modalEl  = document.getElementById('testiModal');
   const modalImg = document.getElementById('testiModalImg');
   document.querySelectorAll('.testi-photo').forEach(box => {
     box.addEventListener('click', () => {

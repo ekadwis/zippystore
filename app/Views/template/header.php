@@ -38,6 +38,7 @@ $current = uri_string();
           <li class="nav-item"><a class="nav-link <?= $current === 'testimonials' ? 'active' : '' ?>" href="<?= base_url('testimonials') ?>">Testimoni</a></li>
           <li class="nav-item"><a class="nav-link <?= $current === 'cara-pesan' ? 'active' : '' ?>" href="<?= base_url('cara-pesan') ?>">Cara Pesan</a></li>
           <li class="nav-item"><a class="nav-link <?= $current === 'gallery' ? 'active' : '' ?>" href="<?= base_url('gallery') ?>">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link <?= str_starts_with($current, 'tutorial') ? 'active' : '' ?>" href="<?= base_url('tutorial') ?>">Tutorial</a></li>
           <li class="nav-item ms-lg-2"><a class="btn btn-outline-accent btn-sm px-3" href="<?= base_url('login') ?>">Login</a></li>
         </ul>
       </div>

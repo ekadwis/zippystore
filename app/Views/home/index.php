@@ -27,7 +27,6 @@
               <h3 class="h5"><?= esc($l['nama']) ?></h3>
               <p class="text-muted-2 small"><?= esc($l['deskripsi']) ?></p>
               <?php
-              // Arahkan tiap layanan ke halaman khususnya
               switch ($l['slug']) {
                 case 'sosmed-boost':
                   $linkLayanan = base_url('sosmed');
@@ -109,39 +108,116 @@
   </div>
 </section>
 
-<!-- PROMO -->
-<section class="pb-5">
-  <div class="container">
-    <div class="promo text-white text-center p-5 reveal">
-      <h2 class="h3 mb-2">🎉 Diskon 20% untuk pemesanan pertama!</h2>
-      <p class="mb-4 opacity-75">Khusus pelanggan baru. Jangan sampai kelewatan.</p>
-      <a href="<?= base_url('testimonials') ?>" class="btn px-4 py-2">Ambil Voucher</a>
-    </div>
-  </div>
-</section>
-
-<!-- CLIENTS -->
+<!-- GALLERY PREVIEW -->
 <section class="section pt-0">
   <div class="container">
-    <h2 class="section-title reveal">Yang Pernah Kami Bantu</h2>
-    <p class="section-sub reveal">Client &amp; project yang telah mempercayai kami</p>
+    <h2 class="section-title reveal">📸 Contoh Produk</h2>
+    <p class="section-sub reveal">Beberapa hasil produk & layanan yang telah kami kerjakan</p>
 
-    <?php if (!empty($clients)): ?>
-      <div class="row g-4">
-        <?php foreach ($clients as $c): ?>
-          <div class="col-6 col-lg-3">
-            <div class="zp-card p-4 text-center reveal">
-              <?php if (!empty($c['logo'])): ?>
-                <img src="<?= base_url($c['logo']) ?>" alt="<?= esc($c['nama']) ?>" style="height:60px;object-fit:contain" class="mx-auto mb-3">
-              <?php endif; ?>
-              <h3 class="h6 mb-0"><?= esc($c['nama']) ?></h3>
+    <?php if (!empty($galeri)): ?>
+      <?php
+        // Helper to resolve gallery image src (same as gallery page)
+        if (!function_exists('_galSrc')) {
+            function _galSrc($f) {
+                if (empty($f)) return '';
+                return (str_starts_with($f, 'http://') || str_starts_with($f, 'https://')) ? $f : base_url($f);
+            }
+        }
+        $katLabel = ['surat'=>'Surat','tugas'=>'Tugas','premium'=>'Premium','sosmed'=>'Sosmed'];
+      ?>
+      <div class="row g-3">
+        <?php foreach (array_slice($galeri, 0, 4) as $g): ?>
+          <div class="col-6 col-md-4 col-lg-3 reveal">
+            <div class="zp-card p-0 overflow-hidden" style="border-radius:12px">
+              <img src="<?= esc(_galSrc($g['file']), 'attr') ?>" alt="<?= esc($g['nama']) ?>" style="width:100%;height:180px;object-fit:cover;display:block" loading="lazy">
+              <div class="p-3">
+                <h6 class="mb-1" style="font-size:14px"><?= esc($g['nama']) ?></h6>
+                <?php if (!empty($g['kategori'])): ?>
+                  <span class="badge rounded-pill" style="background:rgba(99,102,241,.15);color:var(--zp-accent);font-size:11px"><?= esc($katLabel[$g['kategori']] ?? ucfirst($g['kategori'])) ?></span>
+                <?php endif; ?>
+              </div>
             </div>
           </div>
         <?php endforeach; ?>
       </div>
+      <div class="text-center mt-4 reveal">
+        <a href="<?= base_url('gallery') ?>" class="btn btn-outline-accent px-4">Lihat Semua Galeri →</a>
+      </div>
     <?php else: ?>
       <div class="empty reveal">
-        <div class="em">🚀</div>Akan segera hadir!
+        <div class="em">📷</div>Galeri belum tersedia.
+      </div>
+    <?php endif; ?>
+  </div>
+</section>
+
+<!-- TUTORIAL GRATIS -->
+<section class="section pt-0">
+  <div class="container">
+    <h2 class="section-title reveal">🎓 Tutorial Gratis</h2>
+    <p class="section-sub reveal">Panduan lengkap yang bisa kamu ikuti sendiri — 100% gratis!</p>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-6 col-lg-4 reveal">
+        <a href="<?= base_url('tutorial/gemini-pro') ?>" class="text-decoration-none">
+          <div class="zp-card p-4 text-center">
+            <div style="font-size:40px;margin-bottom:12px">🚀</div>
+            <h5 class="mb-2">Gemini PRO 1 Tahun</h5>
+            <p class="text-muted-2 small mb-2">Klaim Gemini 12 Pro gratis selama 1 tahun lewat Bot Telegram.</p>
+            <span class="badge rounded-pill" style="background:rgba(16,185,129,.15);color:#10b981">GRATIS</span>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal">
+        <a href="<?= base_url('tutorial/cloudflare-glm') ?>" class="text-decoration-none">
+          <div class="zp-card p-4 text-center">
+            <div style="font-size:40px;margin-bottom:12px">☁️</div>
+            <h5 class="mb-2">Claim GLM 5.2 & Kimi</h5>
+            <p class="text-muted-2 small mb-2">Akses model AI premium via Cloudflare Workers AI tanpa biaya.</p>
+            <span class="badge rounded-pill" style="background:rgba(16,185,129,.15);color:#10b981">GRATIS</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="text-center mt-4 reveal">
+      <a href="<?= base_url('tutorial') ?>" class="btn btn-outline-accent px-4">Lihat Semua Tutorial →</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONI -->
+<section class="section pt-0">
+  <div class="container">
+    <h2 class="section-title reveal">💬 Yang Pernah Kami Bantu</h2>
+    <p class="section-sub reveal">Cerita langsung dari pelanggan yang sudah merasakan layanan kami</p>
+
+    <?php if (!empty($testimoni)): ?>
+      <div class="row g-4">
+        <?php foreach (array_slice($testimoni, 0, 4) as $t): ?>
+          <div class="col-md-6 col-lg-4 reveal">
+            <div class="zp-card p-4">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--zp-accent),#818cf8);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px">
+                  <?= strtoupper(substr($t['nama'] ?? 'U', 0, 1)) ?>
+                </div>
+                <div>
+                  <h6 class="mb-0" style="font-size:14px"><?= esc($t['nama']) ?></h6>
+                  <?php if (!empty($t['layanan'])): ?>
+                    <small class="text-muted-2"><?= esc($t['layanan']) ?></small>
+                  <?php endif; ?>
+                </div>
+              </div>
+              <p class="small mb-0" style="color:var(--zp-text-2)">"<?= esc($t['pesan'] ?? $t['isi'] ?? '') ?>"</p>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+      <div class="text-center mt-4 reveal">
+        <a href="<?= base_url('testimonials') ?>" class="btn btn-outline-accent px-4">Lihat Semua Testimoni →</a>
+      </div>
+    <?php else: ?>
+      <div class="empty reveal">
+        <div class="em">💬</div>Testimoni belum tersedia.
       </div>
     <?php endif; ?>
   </div>

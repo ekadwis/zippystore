@@ -6,12 +6,19 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'HomeController::index');
 $routes->get('about', 'AboutController::index');
 $routes->get('testimonials', 'TestimoniController::index');
+$routes->get('testimonials/sync-telegram', 'TestimoniController::syncTelegram');
+
+// Telegram Webhook (no auth - called by Telegram servers)
+$routes->post('webhook/telegram', 'TelegramWebhookController::handle');
 $routes->get('cara-pesan', 'CaraPesanController::index');
 $routes->get('gallery', 'GalleryController::index');
 $routes->get('sosmed', 'SosmedController::index');
 $routes->get('joki', 'JokiController::index');
 $routes->get('premium', 'PremiumController::index');
 $routes->get('otp', 'OtpController::index');
+$routes->get('tutorial', 'TutorialController::index');
+$routes->get('tutorial/gemini-pro', 'TutorialController::geminiPro');
+$routes->get('tutorial/cloudflare-glm', 'TutorialController::cloudflareGlm');
 $routes->post('sosmed/hitung', 'SosmedController::hitung');
 $routes->addRedirect('portfolio', 'cara-pesan');
 
@@ -135,6 +142,12 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
         $routes->post('save/(:num)', 'Admin\PromoController::save/$1');
         $routes->get('delete/(:num)','Admin\PromoController::delete/$1');
     });
+
+    // Telegram Bot Management
+    $routes->get('telegram/status',         'TelegramWebhookController::status');
+    $routes->get('telegram/setup-webhook',  'TelegramWebhookController::setupWebhook');
+    $routes->get('telegram/delete-webhook', 'TelegramWebhookController::deleteWebhook');
+    $routes->get('telegram/sync',           'TestimoniController::syncTelegram');
 
     $routes->get('pengaturan',       'Admin\PengaturanController::index');
     $routes->post('pengaturan/save', 'Admin\PengaturanController::save');
