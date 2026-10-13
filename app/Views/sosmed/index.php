@@ -7,14 +7,56 @@
 ?>
 
 <!-- HERO -->
-<header class="section text-center" style="padding-top:140px">
+<header class="section text-center" style="padding-top:140px;padding-bottom:40px">
   <div class="container">
-    <h1 class="fw-bold reveal">Sosmed <span class="text-grad">Boost</span></h1>
-    <p class="text-muted-2 reveal mx-auto" style="max-width:620px">
-      Tingkatkan followers, likes, views, dan share TikTok &amp; Instagram-mu. Harga jujur, proses cepat.
+    <div class="d-inline-flex align-items-center gap-2 mb-3 reveal">
+      <span class="badge-sosmed">FIRST-HAND SMM PANEL</span>
+      <span class="badge-trust">🛡️ 100% Aman Tanpa Password</span>
+    </div>
+    <h1 class="fw-bold reveal">
+      Social Media Growth <span class="text-grad-emerald">&amp; SMM Panel</span>
+    </h1>
+    <p class="text-muted-2 reveal mx-auto" style="max-width:640px">
+      Optimasi interaksi dan reputasi digital (*social proof*) untuk profil pribadi, konten kreator, atau UMKM. Mendukung Instagram, TikTok, YouTube, X (Twitter), dan Threads via panel tangan pertama terverifikasi.
     </p>
   </div>
 </header>
+
+<!-- FEATURE STRIP SOSMED -->
+<section class="pt-0 pb-4">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-6 col-md-3 reveal">
+        <div class="zp-card p-3 text-center" style="background:#fdf4ff">
+          <div style="font-size:26px;margin-bottom:6px">🔒</div>
+          <h6 class="mb-1 fw-bold" style="font-size:14px">Tanpa Password</h6>
+          <p class="text-muted-2 mb-0" style="font-size:12px">Hanya butuh link profil / postingan</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 reveal">
+        <div class="zp-card p-3 text-center" style="background:#fdf4ff">
+          <div style="font-size:26px;margin-bottom:6px">⚡</div>
+          <h6 class="mb-1 fw-bold" style="font-size:14px">Proses Cepat</h6>
+          <p class="text-muted-2 mb-0" style="font-size:12px">Antrean server otomatis terhubung</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 reveal">
+        <div class="zp-card p-3 text-center" style="background:#fdf4ff">
+          <div style="font-size:26px;margin-bottom:6px">🌐</div>
+          <h6 class="mb-1 fw-bold" style="font-size:14px">5 Platform Utama</h6>
+          <p class="text-muted-2 mb-0" style="font-size:12px">IG, TikTok, YT, X, Threads</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 reveal">
+        <div class="zp-card p-3 text-center" style="background:#fdf4ff">
+          <div style="font-size:26px;margin-bottom:6px">📊</div>
+          <h6 class="mb-1 fw-bold" style="font-size:14px">Metrik Lengkap</h6>
+          <p class="text-muted-2 mb-0" style="font-size:12px">Followers, Likes, Views, Shares</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- KALKULATOR -->
 <section class="section pt-0">

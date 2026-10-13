@@ -26,20 +26,21 @@ class PremiumController extends BaseController
         $wa  = !empty($set['no_wa']) ? preg_replace('/[^0-9]/', '', $set['no_wa']) : '6285177838705';
 
         $regulasi = [
-            'Biasakan membaca. Aturan dibuat untuk dipatuhi, bukan pajangan — pelanggaran akan ada konsekuensinya.',
-            'Akun adalah produk black market: jangan harap sestabil langganan resmi. Kamu membayar jauh di bawah harga premium, jadi maklumi keterbatasannya.',
-            'Perbaikan akun 0-3 hari, untuk masalah berat (massive report) 0-7 hari tergantung tingkat kesulitan. Mohon ditunggu dengan sabar.',
-            'Hargai privasi penjual. Admin tidak online 24 jam, balasan tidak selalu instan.',
-            'No rude buyers — mari jaga hubungan baik dengan sopan.',
-            'Tidak menerima rush order. Semua akun dibuat by order (proses 10 menit s/d 1 hari) kecuali tertera ready/onhand. Tidak ada refund dalam bentuk apa pun.',
+            'Penyediaan Akun Legal & Terverifikasi: Seluruh akun disediakan melalui jaringan supplier tangan pertama (first-hand) untuk memastikan stabilitas dan keamanan penggunaan.',
+            'Masa Garansi Penuh 25–30 Hari: Pembelian paket 1 bulan dilindungi garansi aktif 25–30 hari penuh (terhitung full sebulan), dan paket mingguan bergaransi 7 hari.',
+            'SOP Klaim Garansi Cepat: Jika mengalami kendala login atau logout tak terduga, cukup kirim screenshot bukti kendala dan tanggal order ke admin WhatsApp.',
+            'Solutif & Bebas Ribet: Admin akan segera memproses pengecekan ke supplier first-hand untuk memperbaiki akun atau mengganti dengan akun baru dalam garansi.',
+            'Harga Bersahabat Mahasiswa & Pelajar: Menikmati fitur premium favorit tanpa kewajiban kartu kredit internasional dan biaya berlangganan resmi yang mahal.',
+            'Ketentuan Penggunaan: Untuk paket shared/family, dilarang mengubah email/password/profil yang bukan bagian akun Anda agar akun tetap awet.',
         ];
 
         return view('premium/index', [
-            'title'      => 'App Premium - Zippy Store',
+            'title'      => 'Akun & Aplikasi Premium Bergaransi — Zippy Store',
             'struktur'   => $struktur,
             'waNumber'   => $wa,
-            'regulasi'   => $regulasi,   // <-- tambahkan ini
+            'regulasi'   => $regulasi,
             'pengaturan' => $set,
         ]);
     }
 }
+

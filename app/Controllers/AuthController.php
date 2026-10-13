@@ -20,10 +20,19 @@ class AuthController extends BaseController
 
     public function attemptLogin()
     {
-        $username = $this->request->getPost('email'); // field form bernama 'email'
-        $password = $this->request->getPost('password');
+        $input    = trim((string) $this->request->getPost('email')); // field form bernama 'email'
+        $password = (string) $this->request->getPost('password');
 
-        $admin = (new AdminModel())->findByUsername($username);
+        $adminModel = new AdminModel();
+        $admin      = $adminModel->findByUsername($input);
+
+        // Jika user memasukkan email toko, tetap izinkan login
+        if (! $admin) {
+            $set = (new PengaturanModel())->getSettings();
+            if (! empty($set['email']) && strtolower($input) === strtolower($set['email'])) {
+                $admin = $adminModel->first();
+            }
+        }
 
         if ($admin && password_verify($password, $admin['password'])) {
             session()->set([

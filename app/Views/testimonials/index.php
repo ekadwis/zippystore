@@ -14,11 +14,17 @@
 ?>
 
 <!-- HERO -->
-<header class="section text-center" style="padding-top:140px">
+<header class="section text-center" style="padding-top:140px;padding-bottom:40px">
   <div class="container">
-    <h1 class="fw-bold reveal">Kata <span class="text-grad">Mereka</span></h1>
-    <p class="text-muted-2 reveal mx-auto" style="max-width:640px">
-      Ratusan pelanggan sudah mempercayai Zippy Store. Ini bukti nyatanya.
+    <div class="d-inline-flex align-items-center gap-2 mb-3 reveal">
+      <span class="badge-trust">BUKTI &amp; ARSIP REAL-TIME</span>
+      <span class="badge-trust">1.000–5.000+ Transaksi Sukses</span>
+    </div>
+    <h1 class="fw-bold reveal">
+      Bukti Nyata &amp; <span class="text-grad">Testimoni Pelanggan</span>
+    </h1>
+    <p class="text-muted-2 reveal mx-auto" style="max-width:680px">
+      Transparansi adalah komitmen utama kami sejak 2019. Seluruh tangkapan layar kepuasan pelanggan diarsipkan secara publik dan dapat dicek langsung via channel Telegram kami.
     </p>
   </div>
 </header>
@@ -115,10 +121,10 @@
 <!-- Lightbox (Bootstrap modal) -->
 <div class="modal fade" id="testiModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="background:var(--card);border:1px solid var(--border)">
+    <div class="modal-content" style="background:#ffffff;border:2px solid #18181b;box-shadow:6px 6px 0px 0px #18181b">
       <div class="modal-body p-2 position-relative text-center">
-        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" style="z-index:2"></button>
-        <img src="" alt="Testimoni" style="max-height:80vh;max-width:100%;border-radius:10px" id="testiModalImg">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" style="z-index:2"></button>
+        <img src="" alt="Testimoni" style="max-height:80vh;max-width:100%;border-radius:8px;border:2px solid #18181b" id="testiModalImg">
       </div>
     </div>
   </div>

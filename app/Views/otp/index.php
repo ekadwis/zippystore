@@ -2,11 +2,15 @@
 
 <?php $waNumber = $waNumber ?? '6285177838705'; ?>
 
-<header class="section text-center" style="padding-top:140px">
+<header class="section text-center" style="padding-top:140px;padding-bottom:40px">
   <div class="container">
-    <h1 class="fw-bold reveal">Nomor <span class="text-grad">OTP</span></h1>
+    <div class="d-inline-flex align-items-center gap-2 mb-3 reveal">
+      <span class="badge-trust">SEWA NOMOR VIRTUAL</span>
+      <span class="badge-trust">⚡ Verifikasi Cepat &amp; Privat</span>
+    </div>
+    <h1 class="fw-bold reveal">Sewa Nomor <span class="text-grad">OTP Verifikasi</span></h1>
     <p class="text-muted-2 reveal mx-auto" style="max-width:620px">
-      Sewa nomor untuk verifikasi OTP berbagai aplikasi. Sekali pakai, strong number, proses cepat.
+      Sewa nomor untuk verifikasi SMS/OTP berbagai aplikasi. Sekali pakai, strong number, dan proses cepat via WhatsApp resmi Zippy Store.
     </p>
   </div>
 </header>
@@ -35,8 +39,8 @@
                     <span><?= esc($p['nama']) ?></span>
                   </span>
                   <span class="d-flex align-items-center gap-3">
-                    <span class="text-grad fw-semibold">Rp <?= number_format($p['harga'], 0, ',', '.') ?></span>
-                    <a href="<?= $waLink ?>" target="_blank" class="btn btn-sm btn-outline-accent py-1 px-3">Order</a>
+                    <span class="fw-bold" style="font-family:var(--font-display);font-size:15px">Rp <?= number_format($p['harga'], 0, ',', '.') ?></span>
+                    <a href="<?= $waLink ?>" target="_blank" class="btn btn-sm btn-accent py-1 px-3">Order</a>
                   </span>
                 </li>
               <?php endforeach; ?>

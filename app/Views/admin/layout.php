@@ -11,7 +11,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= esc($title ?? 'Admin') ?> - Zippy Store</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= base_url('css/admin-sosmed.css') ?>">
 </head>
 <body>
@@ -19,7 +21,7 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
-    <a href="<?= site_url('admin/sosmed') ?>" class="brand">Zippy<span>.</span></a>
+    <a href="<?= site_url('admin/sosmed') ?>" class="brand">Zippy<span>Store.</span></a>
 
     <!-- ===== LAYANAN ===== -->
     <div class="sb-label">Layanan</div>
@@ -51,6 +53,13 @@
       </nav>
     <?php endif; ?>
 
+    <!-- ===== PROMOSI & HERO ===== -->
+    <div class="sb-label">Promo &amp; Hero</div>
+    <nav class="nav flex-column">
+      <a class="nav-link <?= str_contains($current,'admin/flash-sale') ? 'active' : '' ?>" href="<?= site_url('admin/flash-sale') ?>">⚡ Flash Sale Banner</a>
+      <a class="nav-link <?= str_contains($current,'admin/promo') ? 'active' : '' ?>" href="<?= site_url('admin/promo') ?>">🎁 Kupon Promo</a>
+    </nav>
+
     <!-- ===== KONTEN ===== -->
     <div class="sb-label">Konten</div>
     <nav class="nav flex-column">
@@ -58,7 +67,6 @@
       <a class="nav-link <?= str_contains($current,'admin/galeri') ? 'active' : '' ?>" href="<?= site_url('admin/galeri') ?>">🖼️ Galeri</a>
       <a class="nav-link <?= str_contains($current,'admin/statistik') ? 'active' : '' ?>" href="<?= site_url('admin/statistik') ?>">📊 Statistik</a>
       <a class="nav-link <?= str_contains($current,'admin/client') ? 'active' : '' ?>" href="<?= site_url('admin/client') ?>">🤝 Client</a>
-      <a class="nav-link <?= str_contains($current,'admin/promo') ? 'active' : '' ?>" href="<?= site_url('admin/promo') ?>">🎁 Promo</a>
     </nav>
 
     <!-- ===== PENGATURAN ===== -->

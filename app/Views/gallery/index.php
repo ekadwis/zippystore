@@ -8,10 +8,16 @@
   $katLabel = ['surat'=>'Surat','tugas'=>'Tugas','premium'=>'Premium','sosmed'=>'Sosmed'];
 ?>
 
-<header class="section text-center" style="padding-top:140px">
+<header class="section text-center" style="padding-top:140px;padding-bottom:40px">
   <div class="container">
-    <h1 class="fw-bold reveal">Gallery</h1>
-    <p class="text-muted-2 reveal">Kumpulan hasil pekerjaan kami — surat, tugas, premium, sosmed, dan lainnya.</p>
+    <div class="d-inline-flex align-items-center gap-2 mb-3 reveal">
+      <span class="badge-trust">PORTOFOLIO &amp; DOKUMENTASI</span>
+      <span class="badge-trust">Arsip Pengerjaan</span>
+    </div>
+    <h1 class="fw-bold reveal">Galeri <span class="text-grad">Hasil Pengerjaan</span></h1>
+    <p class="text-muted-2 reveal mx-auto" style="max-width:640px">
+      Sampel dokumentasi pekerjaan yang telah diselesaikan oleh tim Zippy Store — surat administrasi, tugas akademik/IT, konfigurasi akun premium, hingga hasil boost sosmed.
+    </p>
   </div>
 </header>
 
@@ -78,11 +84,11 @@
 <!-- Lightbox -->
 <div class="modal fade" id="galModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" style="background:var(--card);border:1px solid var(--border)">
+    <div class="modal-content" style="background:#ffffff;border:2px solid #18181b;box-shadow:6px 6px 0px 0px #18181b">
       <div class="modal-body p-2 position-relative text-center">
-        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" style="z-index:2"></button>
-        <img src="" alt="" id="galModalImg" style="max-height:82vh;max-width:100%;border-radius:10px">
-        <div id="galModalCap" class="text-muted-2 small py-2"></div>
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" style="z-index:2"></button>
+        <img src="" alt="" id="galModalImg" style="max-height:82vh;max-width:100%;border-radius:8px;border:2px solid #18181b">
+        <div id="galModalCap" class="text-muted-2 small py-2 fw-bold"></div>
       </div>
     </div>
   </div>

@@ -1,12 +1,15 @@
 <?= $this->include('template/header') ?>
 
 <!-- Hero -->
-<section class="section" style="padding-top:120px">
+<section class="section" style="padding-top:140px;padding-bottom:40px">
   <div class="container">
     <div class="text-center mb-5 reveal">
-      <span class="badge rounded-pill px-3 py-2 mb-3" style="background:rgba(99,102,241,.15);color:var(--zp-accent)">🎓 FREE</span>
-      <h1 class="section-title">Tutorial <span class="text-grad">Gratis</span></h1>
-      <p class="section-sub mx-auto" style="max-width:560px">Kumpulan panduan lengkap yang bisa kamu ikuti sendiri. Semua tutorial ini 100% gratis tanpa biaya apapun!</p>
+      <div class="d-inline-flex align-items-center gap-2 mb-3">
+        <span class="badge-sosmed">100% GRATIS</span>
+        <span class="badge-trust">PANDUAN &amp; TOOLS</span>
+      </div>
+      <h1 class="section-title">Tutorial <span class="text-grad">Mandiri</span></h1>
+      <p class="section-sub mx-auto" style="max-width:560px">Kumpulan panduan langkah demi langkah yang bisa kamu ikuti sendiri secara mandiri tanpa biaya apapun.</p>
     </div>
 
     <!-- Tutorial Cards Grid -->

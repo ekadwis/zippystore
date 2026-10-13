@@ -143,6 +143,12 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
         $routes->get('delete/(:num)','Admin\PromoController::delete/$1');
     });
 
+    // Flash Sale Banner
+    $routes->group('flash-sale', static function ($routes) {
+        $routes->get('/',     'Admin\FlashSaleController::index');
+        $routes->post('save', 'Admin\FlashSaleController::save');
+    });
+
     // Telegram Bot Management
     $routes->get('telegram/status',         'TelegramWebhookController::status');
     $routes->get('telegram/setup-webhook',  'TelegramWebhookController::setupWebhook');
