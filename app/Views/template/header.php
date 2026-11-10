@@ -15,9 +15,8 @@ $isLayananActive = in_array($current, ['joki', 'premium', 'sosmed', 'otp']);
   <title><?= esc($title ?? ($namaToko . ' — Layanan Kebutuhan Digital & Asistensi Terpercaya')) ?></title>
   <meta name="description" content="<?= esc($set['deskripsi'] ?? 'Zippy Store (zippystore.my.id) — Layanan kebutuhan digital, aplikasi premium bergaransi, asistensi tugas & IT, serta social media growth terpercaya sejak 2019.') ?>">
   <meta name="keywords" content="zippy store, zippystore.my.id, joki tugas, asistensi it, coding skripsi, excel sheets, spotify premium, netflix murah, youtube premium, smm panel, followers instagram tiktok">
-  <?php if (!empty($set['favicon'])): ?>
-    <link rel="icon" href="<?= base_url($set['favicon']) ?>">
-  <?php endif; ?>
+  <link rel="icon" type="image/png" href="<?= base_url('favicon.png') ?>">
+  <link rel="shortcut icon" href="<?= base_url('favicon.ico') ?>">
 
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
