@@ -36,6 +36,17 @@
           </select>
         </div>
 
+        <div class="mb-3">
+          <label class="form-label">Link Demo / Website / Project <span class="text-muted-2">(opsional)</span></label>
+          <input type="url" name="link" class="form-control" value="<?= esc(old('link', $row['link'] ?? '')) ?>" placeholder="https://contoh-website.com atau https://github.com/...">
+          <div class="form-text text-muted-2">Jika diisi, pengunjung bisa mengklik tombol 'Kunjungi Website / Live Demo' langsung dari galeri.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Deskripsi Singkat <span class="text-muted-2">(opsional)</span></label>
+          <textarea name="deskripsi" class="form-control" rows="2" placeholder="contoh: Website company profile dibangun menggunakan Laravel & VueJS"><?= esc(old('deskripsi', $row['deskripsi'] ?? '')) ?></textarea>
+        </div>
+
         <div class="form-check form-switch mb-4">
           <input class="form-check-input" type="checkbox" name="is_active" id="aktif" value="1" <?= (!$isEdit || $row['is_active']) ? 'checked' : '' ?>>
           <label class="form-check-label" for="aktif">Tampilkan di galeri</label>

@@ -10,7 +10,7 @@ class GaleriModel extends Model
     protected $primaryKey    = 'id';
     protected $returnType    = 'array';
     protected $useTimestamps = false;
-    protected $allowedFields = ['nama', 'file', 'kategori', 'is_active', 'created_at'];
+    protected $allowedFields = ['nama', 'file', 'kategori', 'link', 'deskripsi', 'is_active', 'created_at'];
 
     // Publik: filter kategori + pencarian nama (hanya aktif)
     public function getFiltered($kategori = null, $keyword = null)

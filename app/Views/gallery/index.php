@@ -55,15 +55,34 @@
     <?php if (!empty($galeri)): ?>
       <div class="gallery-masonry">
         <?php foreach ($galeri as $g): ?>
-          <?php $src = galSrc($g['file']); ?>
-          <div class="g-item reveal" data-full="<?= esc($src, 'attr') ?>" data-nama="<?= esc($g['nama'], 'attr') ?>">
+          <?php 
+            $src = galSrc($g['file']); 
+            $hasLink = !empty($g['link']);
+          ?>
+          <div class="g-item reveal" 
+               data-full="<?= esc($src, 'attr') ?>" 
+               data-nama="<?= esc($g['nama'], 'attr') ?>"
+               data-link="<?= esc($g['link'] ?? '', 'attr') ?>"
+               data-deskripsi="<?= esc($g['deskripsi'] ?? '', 'attr') ?>">
             <div class="position-relative">
               <img src="<?= esc($src, 'attr') ?>" alt="<?= esc($g['nama']) ?>" loading="lazy">
               <div class="zoom-ico">🔍</div>
+              <?php if ($hasLink): ?>
+                <span class="badge bg-dark text-white position-absolute top-0 end-0 m-2 px-2 py-1 small border border-light" style="font-size:11px; z-index:2">
+                  🔗 Demo Link
+                </span>
+              <?php endif; ?>
             </div>
-            <div class="g-cap">
-              <span class="g-nama"><?= esc($g['nama']) ?></span>
-              <span class="g-kat"><?= esc($katLabel[$g['kategori']] ?? ucfirst($g['kategori'])) ?></span>
+            <div class="g-cap d-flex justify-content-between align-items-center">
+              <div>
+                <span class="g-nama d-block"><?= esc($g['nama']) ?></span>
+                <span class="g-kat"><?= esc($katLabel[$g['kategori']] ?? ucfirst($g['kategori'])) ?></span>
+              </div>
+              <?php if ($hasLink): ?>
+                <a href="<?= esc($g['link']) ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-dark py-1 px-2 fw-semibold" onclick="event.stopPropagation();" title="Kunjungi Website">
+                  Buka &rarr;
+                </a>
+              <?php endif; ?>
             </div>
           </div>
         <?php endforeach; ?>
@@ -85,10 +104,19 @@
 <div class="modal fade" id="galModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content" style="background:#ffffff;border:2px solid #18181b;box-shadow:6px 6px 0px 0px #18181b">
-      <div class="modal-body p-2 position-relative text-center">
+      <div class="modal-body p-3 position-relative text-center">
         <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" style="z-index:2"></button>
-        <img src="" alt="" id="galModalImg" style="max-height:82vh;max-width:100%;border-radius:8px;border:2px solid #18181b">
-        <div id="galModalCap" class="text-muted-2 small py-2 fw-bold"></div>
+        <img src="" alt="" id="galModalImg" style="max-height:75vh;max-width:100%;border-radius:8px;border:2px solid #18181b">
+        
+        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2 text-start">
+          <div>
+            <div id="galModalCap" class="text-dark fw-bold fs-6"></div>
+            <div id="galModalDesc" class="text-muted-2 small"></div>
+          </div>
+          <a href="#" id="galModalLink" target="_blank" rel="noopener" class="btn btn-accent px-4 py-2 fw-bold" style="display:none">
+            🌐 Kunjungi Website / Demo &rarr;
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -110,12 +138,34 @@
 
   // Lightbox
   const galModalEl = document.getElementById('galModal');
-  const galImg = document.getElementById('galModalImg');
-  const galCap = document.getElementById('galModalCap');
+  const galImg     = document.getElementById('galModalImg');
+  const galCap     = document.getElementById('galModalCap');
+  const galDesc    = document.getElementById('galModalDesc');
+  const galLink    = document.getElementById('galModalLink');
+
   document.querySelectorAll('.g-item').forEach(item => {
     item.addEventListener('click', () => {
       galImg.src = item.dataset.full;
       galCap.textContent = item.dataset.nama || '';
+      
+      // Deskripsi
+      if (item.dataset.deskripsi) {
+        galDesc.textContent = item.dataset.deskripsi;
+        galDesc.style.display = 'block';
+      } else {
+        galDesc.textContent = '';
+        galDesc.style.display = 'none';
+      }
+
+      // Link Demo Website
+      if (item.dataset.link) {
+        galLink.href = item.dataset.link;
+        galLink.style.display = 'inline-flex';
+      } else {
+        galLink.href = '#';
+        galLink.style.display = 'none';
+      }
+
       bootstrap.Modal.getOrCreateInstance(galModalEl).show();
     });
   });

@@ -51,10 +51,15 @@ class GaleriController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Kategori tidak valid.');
         }
 
+        $link      = trim((string) $this->request->getPost('link'));
+        $deskripsi = trim((string) $this->request->getPost('deskripsi'));
+
         $data = [
             'nama'      => $nama,
             'file'      => $file,
             'kategori'  => $kategori,
+            'link'      => $link ?: null,
+            'deskripsi' => $deskripsi ?: null,
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
         ];
 
