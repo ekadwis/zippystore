@@ -14,6 +14,9 @@ class SosmedOrderModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'order_code',
+        'is_mass',
+        'mass_data',
+        'mass_count',
         'platform_nama',
         'layanan_id',
         'layanan_nama',
@@ -25,6 +28,9 @@ class SosmedOrderModel extends Model
         'provider_order_id',
         'status_order',
         'status_pembayaran',
+        'payment_reference',
+        'payment_url',
+        'payment_method',
         'provider_response',
         'catatan',
         'created_at',

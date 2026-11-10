@@ -16,7 +16,7 @@
       Social Media Growth <span class="text-grad-emerald">&amp; Auto SMM</span>
     </h1>
     <p class="text-muted-2 reveal mx-auto" style="max-width:680px">
-      Suntik interaksi sosial media secara instan &amp; otomatis. Pembayaran serba otomatis via QRIS (All E-Wallet &amp; Bank), pesanan langsung diproses detik itu juga!
+      Suntik interaksi sosial media secara instan &amp; otomatis. Mendukung <strong>Pemesanan Tunggal</strong> maupun <strong>Orderan Massal (Hingga 50 Target Sekaligus)</strong> dengan pembayaran QRIS otomatis!
     </p>
   </div>
 </header>
@@ -34,16 +34,16 @@
       </div>
       <div class="col-6 col-md-3 reveal">
         <div class="zp-card p-3 text-center" style="background:#fdf4ff">
-          <div style="font-size:26px;margin-bottom:6px">📱</div>
-          <h6 class="mb-1 fw-bold" style="font-size:14px">QRIS Otomatis</h6>
-          <p class="text-muted-2 mb-0" style="font-size:12px">Bayar via Dana, GoPay, OVO, BCA dll</p>
+          <div style="font-size:26px;margin-bottom:6px">📋</div>
+          <h6 class="mb-1 fw-bold" style="font-size:14px">Mendukung Massal</h6>
+          <p class="text-muted-2 mb-0" style="font-size:12px">Order s/d 50 link/akun sekali klik</p>
         </div>
       </div>
       <div class="col-6 col-md-3 reveal">
         <div class="zp-card p-3 text-center" style="background:#fdf4ff">
-          <div style="font-size:26px;margin-bottom:6px">⚡</div>
-          <h6 class="mb-1 fw-bold" style="font-size:14px">Auto Dispatch</h6>
-          <p class="text-muted-2 mb-0" style="font-size:12px">Langsung diproses otomatis via server</p>
+          <div style="font-size:26px;margin-bottom:6px">📱</div>
+          <h6 class="mb-1 fw-bold" style="font-size:14px">QRIS Otomatis</h6>
+          <p class="text-muted-2 mb-0" style="font-size:12px">Bayar via Dana, GoPay, OVO, BCA dll</p>
         </div>
       </div>
       <div class="col-6 col-md-3 reveal">
@@ -65,15 +65,23 @@
       <!-- KOLOM KIRI: FORM ORDER & PEMBAYARAN -->
       <div class="col-12 col-lg-7">
         <div class="zp-card p-4 p-md-5 reveal h-100">
-          <div class="d-flex align-items-center gap-2 mb-3">
+          
+          <!-- TAB SWITCHER: SINGLE vs MASSAL -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
             <span class="badge bg-primary px-3 py-2 text-white fw-bold">FORM PEMESANAN INSTAN</span>
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-dark active" id="tabSingle">Single Order</button>
+              <button type="button" class="btn btn-outline-dark" id="tabMass">⚡ Order Massal (Max 50)</button>
+            </div>
           </div>
-          <h2 class="h4 mb-1">Pesan Layanan Sosmed</h2>
-          <p class="text-muted-2 small mb-4">Pilih layanan, tentukan jumlah, dan bayar praktis via QRIS otomatis.</p>
+
+          <h2 class="h4 mb-1" id="formTitle">Pesan Layanan Sosmed</h2>
+          <p class="text-muted-2 small mb-4" id="formSubtitle">Pilih layanan, tentukan jumlah, dan bayar praktis via QRIS otomatis.</p>
 
           <!-- Form Pemesanan -->
           <form id="sosmedOrderForm">
             <?= csrf_field() ?>
+            <input type="hidden" name="is_mass" id="is_mass" value="0">
 
             <!-- Platform -->
             <div class="mb-3">
@@ -92,23 +100,45 @@
               <div class="form-text text-muted-2" id="serviceDesc"></div>
             </div>
 
-            <!-- Jumlah -->
-            <div class="mb-3">
-              <label class="form-label fw-semibold small">3. Jumlah Pesanan</label>
-              <div class="input-group">
-                <input type="number" id="jumlah" name="jumlah" class="form-control" placeholder="Contoh: 1000" min="100">
-                <span class="input-group-text" id="unitText">pcs / views</span>
+            <!-- INPUT KHUSUS SINGLE ORDER -->
+            <div id="singleFields">
+              <!-- Jumlah -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small">3. Jumlah Pesanan</label>
+                <div class="input-group">
+                  <input type="number" id="jumlah" name="jumlah" class="form-control" placeholder="Contoh: 1000" min="100">
+                  <span class="input-group-text" id="unitText">pcs / views</span>
+                </div>
+                <div class="form-text text-muted-2" id="rangeHint">Pilih layanan untuk melihat batas min/max order.</div>
               </div>
-              <div class="form-text text-muted-2" id="rangeHint">Pilih layanan untuk melihat batas min/max order.</div>
+
+              <!-- Target Link / Username -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold small">4. Target (Link Postingan / Video / Username)</label>
+                <input type="text" id="target" name="target" class="form-control" placeholder="https://vt.tiktok.com/... atau @username">
+                <div class="form-text text-muted-2">
+                  • Untuk <strong>Followers</strong>: Masukkan username profil (contoh: <code>@akunsaya</code> atau link profil).<br>
+                  • Untuk <strong>Likes &amp; Views</strong>: Masukkan link video/postingan langsung.
+                </div>
+              </div>
             </div>
 
-            <!-- Target Link / Username -->
-            <div class="mb-3">
-              <label class="form-label fw-semibold small">4. Target (Link Postingan / Video / Username)</label>
-              <input type="text" id="target" name="target" class="form-control" placeholder="https://vt.tiktok.com/... atau @username" required>
-              <div class="form-text text-muted-2">
-                • Untuk <strong>Followers</strong>: Masukkan username profil (contoh: <code>@akunsaya</code> atau link profil).<br>
-                • Untuk <strong>Likes &amp; Views</strong>: Masukkan link video/postingan langsung.
+            <!-- INPUT KHUSUS ORDER MASSAL (BATCH) -->
+            <div id="massFields" style="display:none">
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label fw-semibold small mb-0">3. Masukkan Daftar Target &amp; Jumlah (1 Baris = 1 Target)</label>
+                  <span class="badge bg-secondary font-monospace" id="massCounter">0 / 50 Baris</span>
+                </div>
+                <textarea id="mass_input" name="mass_input" class="form-control font-monospace" rows="6" placeholder="Format: link|jumlah&#10;Contoh:&#10;https://vt.tiktok.com/ZSpDaGD7t/|1000&#10;https://vt.tiktok.com/ZSpDaGD7x/|5000&#10;https://www.tiktok.com/@user/video/123|10000"></textarea>
+                <div class="form-text text-muted-2">
+                  Format penulisan per baris: <code>link_atau_username|jumlah</code> (dipisahkan tanda garis tegak <strong>|</strong> atau spasi). Maksimal <strong>50 target</strong> per submit.
+                </div>
+              </div>
+
+              <div id="massPreviewBox" class="p-3 bg-light rounded border mb-3 small" style="display:none">
+                <div class="fw-bold mb-1 text-dark">Ringkasan Validasi Massal:</div>
+                <div id="massPreviewContent" class="text-muted-2"></div>
               </div>
             </div>
 
@@ -174,6 +204,7 @@
             
             <div class="bg-white p-3 rounded border text-start mb-3 small">
               <div><strong>Kode Pesanan:</strong> <span id="resOrderCode" class="badge bg-secondary font-monospace"></span></div>
+              <div><strong>Tipe Pesanan:</strong> <span id="resTipe" class="badge bg-info text-dark">Single</span></div>
               <div><strong>ID Server:</strong> <span id="resProviderId" class="badge bg-primary font-monospace"></span></div>
               <div><strong>Status Order:</strong> <span id="resStatus" class="badge bg-success">PROCESSING</span></div>
               <div><strong>Keterangan:</strong> <span id="resCatatan">Otomatis diproses server</span></div>
@@ -200,6 +231,14 @@
 
           <div class="d-flex flex-column gap-3 text-muted-2 small">
             
+            <div class="d-flex gap-3">
+              <div class="text-primary fs-5">📋</div>
+              <div>
+                <strong class="text-dark">Fitur Order Massal:</strong><br>
+                Bisa memasukkan hingga <strong>50 video/link/akun sekaligus</strong> dalam 1 kali transaksi QRIS. Sangat cocok untuk kreator atau agensi yang ingin boost banyak konten sekaligus.
+              </div>
+            </div>
+
             <div class="d-flex gap-3">
               <div class="text-primary fs-5">⏱️</div>
               <div>
@@ -256,12 +295,13 @@
           <hr class="my-4">
 
           <div class="p-3 rounded bg-white border">
-            <h6 class="fw-bold mb-2 small text-dark">💡 Tips Pengisian Link Target:</h6>
-            <ul class="mb-0 ps-3 small text-muted-2">
-              <li><strong>TikTok Views/Likes:</strong> <code>https://vt.tiktok.com/xxxx/</code> atau <code>https://www.tiktok.com/@user/video/xxxx</code></li>
-              <li><strong>Instagram Likes/Views:</strong> <code>https://www.instagram.com/reel/xxxx/</code> atau <code>/p/xxxx/</code></li>
-              <li><strong>Followers:</strong> Pastikan username benar dan huruf besar/kecil tidak salah.</li>
-            </ul>
+            <h6 class="fw-bold mb-2 small text-dark">💡 Contoh Input Massal:</h6>
+            <code class="d-block small p-2 bg-light rounded text-dark mb-2">
+              https://vt.tiktok.com/xxxx1/|1000<br>
+              https://vt.tiktok.com/xxxx2/|2000<br>
+              https://vt.tiktok.com/xxxx3/|5000
+            </code>
+            <span class="small text-muted-2">Gunakan format di atas untuk submit banyak link sekaligus.</span>
           </div>
 
         </div>
@@ -343,6 +383,14 @@
       ];
   }, $layananFlat)) ?>;
 
+  const tabSingle  = document.getElementById('tabSingle');
+  const tabMass    = document.getElementById('tabMass');
+  const isMassInp  = document.getElementById('is_mass');
+  const singleFields = document.getElementById('singleFields');
+  const massFields   = document.getElementById('massFields');
+  const massInput    = document.getElementById('mass_input');
+  const massCounter  = document.getElementById('massCounter');
+
   const elPlat    = document.getElementById('platform');
   const elLay     = document.getElementById('layanan');
   const elJml     = document.getElementById('jumlah');
@@ -356,6 +404,35 @@
   const btnSubmit = document.getElementById('btnSubmitOrder');
 
   let currentActiveOrderCode = null;
+
+  // TAB SWITCHING: Single vs Massal
+  tabSingle.addEventListener('click', () => {
+    tabSingle.classList.add('active', 'btn-dark');
+    tabSingle.classList.remove('btn-outline-dark');
+    tabMass.classList.remove('active', 'btn-dark');
+    tabMass.classList.add('btn-outline-dark');
+
+    isMassInp.value = '0';
+    singleFields.style.display = 'block';
+    massFields.style.display = 'none';
+    document.getElementById('formTitle').textContent = 'Pesan Layanan Sosmed';
+    document.getElementById('formSubtitle').textContent = 'Pilih layanan, tentukan jumlah, dan bayar praktis via QRIS otomatis.';
+    updateCalculation();
+  });
+
+  tabMass.addEventListener('click', () => {
+    tabMass.classList.add('active', 'btn-dark');
+    tabMass.classList.remove('btn-outline-dark');
+    tabSingle.classList.remove('active', 'btn-dark');
+    tabSingle.classList.add('btn-outline-dark');
+
+    isMassInp.value = '1';
+    singleFields.style.display = 'none';
+    massFields.style.display = 'block';
+    document.getElementById('formTitle').textContent = 'Order Sosmed Massal (Batch)';
+    document.getElementById('formSubtitle').textContent = 'Masukkan hingga 50 target konten/akun sekaligus. 1 Baris = 1 Target.';
+    updateCalculation();
+  });
 
   // Populasi Dropdown Platform
   const platMap = {};
@@ -383,7 +460,7 @@
     const opt = elLay.selectedOptions[0];
     if (opt && opt.dataset.min) {
       const isViews = opt.dataset.nama.toLowerCase().includes('views');
-      elRange.innerHTML = `Batas: <strong>${(+opt.dataset.min).toLocaleString('id-ID')} – ${(+opt.dataset.max).toLocaleString('id-ID')}</strong>` + 
+      elRange.innerHTML = `Batas per target: <strong>${(+opt.dataset.min).toLocaleString('id-ID')} – ${(+opt.dataset.max).toLocaleString('id-ID')}</strong>` + 
                           (isViews ? ` (Min 1.000 views, bebas ketik misal 1.500)` : ``);
     } else {
       elRange.textContent = '';
@@ -392,41 +469,73 @@
   });
 
   elJml.addEventListener('input', updateCalculation);
+  massInput.addEventListener('input', () => {
+    const lines = massInput.value.split('\n').filter(l => l.trim().length > 0);
+    massCounter.textContent = `${lines.length} / 50 Baris`;
+    if (lines.length > 50) {
+      massCounter.className = 'badge bg-danger font-monospace';
+    } else {
+      massCounter.className = 'badge bg-secondary font-monospace';
+    }
+    updateCalculation();
+  });
 
-  // Kalkulasi harga realtime
+  // Kalkulasi harga realtime (Single / Massal)
   let debounceTimeout = null;
   function updateCalculation() {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(async () => {
-      const lid = elLay.value;
-      const jml = parseInt(elJml.value);
+      const lid    = elLay.value;
+      const isMass = parseInt(isMassInp.value);
 
-      if (!lid || !jml || jml <= 0) {
+      if (!lid) {
         elPrice.textContent = 'Rp 0';
-        elDetail.textContent = 'Silakan pilih layanan dan tentukan jumlah';
+        elDetail.textContent = 'Silakan pilih layanan terlebih dahulu';
         return;
       }
 
       const fd = new FormData();
       fd.append('layanan_id', lid);
-      fd.append('jumlah', jml);
+      fd.append('is_mass', isMass);
       fd.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+
+      if (isMass === 1) {
+        const raw = massInput.value.trim();
+        if (!raw) {
+          elPrice.textContent = 'Rp 0';
+          elDetail.textContent = 'Masukkan baris target massal (format: link|jumlah)';
+          return;
+        }
+        fd.append('mass_input', raw);
+      } else {
+        const jml = parseInt(elJml.value);
+        if (!jml || jml <= 0) {
+          elPrice.textContent = 'Rp 0';
+          elDetail.textContent = 'Silakan tentukan jumlah pesanan';
+          return;
+        }
+        fd.append('jumlah', jml);
+      }
 
       try {
         const res = await fetch('<?= base_url('sosmed/hitung') ?>', { method: 'POST', body: fd });
         const json = await res.json();
         if (json.ok) {
           elPrice.textContent = json.harga_fmt;
-          elDetail.textContent = `${json.jumlah.toLocaleString('id-ID')} ${json.layanan} (${json.tier})`;
+          if (json.is_mass) {
+            elDetail.textContent = `Order Massal: ${json.count} Target | Total Akumulasi: ${json.total_jumlah.toLocaleString('id-ID')} pcs`;
+          } else {
+            elDetail.textContent = `${json.jumlah.toLocaleString('id-ID')} ${json.layanan} (${json.tier})`;
+          }
           elErr.style.display = 'none';
         } else {
           elPrice.textContent = 'Rp -';
-          elDetail.textContent = json.msg;
+          elDetail.innerHTML = `<span class="text-warning">${json.msg}</span>`;
         }
       } catch (err) {
         console.error(err);
       }
-    }, 250);
+    }, 300);
   }
 
   // Tombol "Pilih" di tabel katalog
@@ -435,6 +544,8 @@
       const pid = btn.dataset.platformId;
       const lid = btn.dataset.layananId;
       const jml = btn.dataset.jumlah;
+
+      tabSingle.click(); // Reset ke tab single
 
       elPlat.value = pid;
       elPlat.dispatchEvent(new Event('change'));
@@ -464,13 +575,15 @@
           // Sembunyikan Box Bayar -> Tampilkan Box Sukses
           document.getElementById('paymentBox').style.display = 'none';
           document.getElementById('resOrderCode').textContent = data.order_code;
+          document.getElementById('resTipe').textContent = data.is_mass ? `Massal (${data.mass_count} Target)` : 'Single Order';
           document.getElementById('resProviderId').textContent = data.provider_order_id ? '#' + data.provider_order_id : 'Antrean Server';
           document.getElementById('resStatus').textContent = (data.status_order || 'Processing').toUpperCase();
           document.getElementById('resCatatan').textContent = data.catatan || 'Otomatis diproses';
 
           const waText = `Halo Admin Zippy Store, saya telah membayar order sosmed:%0A` +
                          `*Kode Pesanan:* ${data.order_code}%0A` +
-                         `*Status:* Lunas & Sedang Diproses%0A` +
+                         `*Tipe:* ${data.is_mass ? 'Massal (' + data.mass_count + ' target)' : 'Single'}%0A` +
+                         `*Status:* Lunas & Sedang Diproses Server%0A` +
                          `Mohon dipantau ya!`;
           document.getElementById('btnTrackWA').href = `https://wa.me/${WA_ADMIN}?text=${waText}`;
 
@@ -510,32 +623,56 @@
     elErr.style.display = 'none';
 
     const lid    = elLay.value;
-    const jml    = elJml.value;
-    const target = elTarget.value.trim();
+    const isMass = parseInt(isMassInp.value);
     const wa     = elWaBuyer.value.trim();
 
-    if (!lid || !jml || !target) {
-      elErr.textContent = 'Harap lengkapi Platform, Layanan, Jumlah, dan Target Link/Username.';
+    if (!lid) {
+      elErr.textContent = 'Harap pilih Layanan terlebih dahulu.';
       elErr.style.display = 'block';
       return;
     }
 
-    btnSubmit.disabled = true;
-    btnSubmit.innerHTML = '⏳ Menyiapkan Tagihan QRIS...';
-
     const fd = new FormData();
     fd.append('layanan_id', lid);
-    fd.append('jumlah', jml);
-    fd.append('target', target);
+    fd.append('is_mass', isMass);
     fd.append('wa_buyer', wa);
     fd.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+
+    if (isMass === 1) {
+      const massVal = massInput.value.trim();
+      const lines = massVal.split('\n').filter(l => l.trim().length > 0);
+      if (!massVal || lines.length === 0) {
+        elErr.textContent = 'Daftar target massal tidak boleh kosong.';
+        elErr.style.display = 'block';
+        return;
+      }
+      if (lines.length > 50) {
+        elErr.textContent = 'Maksimal 50 target sekali checkout.';
+        elErr.style.display = 'block';
+        return;
+      }
+      fd.append('mass_input', massVal);
+    } else {
+      const jml    = elJml.value;
+      const target = elTarget.value.trim();
+      if (!jml || !target) {
+        elErr.textContent = 'Harap lengkapi Jumlah dan Target Link/Username.';
+        elErr.style.display = 'block';
+        return;
+      }
+      fd.append('jumlah', jml);
+      fd.append('target', target);
+    }
+
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '⏳ Menyiapkan Tagihan QRIS...';
 
     try {
       const res = await fetch('<?= base_url('sosmed/order') ?>', { method: 'POST', body: fd });
       const json = await res.json();
 
       if (!json.ok) {
-        elErr.textContent = json.msg || 'Gagal membuat tagihan pembayaran. Silakan coba lagi.';
+        elErr.innerHTML = json.msg || 'Gagal membuat tagihan pembayaran. Silakan periksa kembali input.';
         elErr.style.display = 'block';
         btnSubmit.disabled = false;
         btnSubmit.innerHTML = '💳 Lanjut ke Pembayaran QRIS';
@@ -548,7 +685,7 @@
       elForm.style.display = 'none';
       document.getElementById('payAmountText').textContent = json.harga_fmt;
 
-      // Render QR Code via Google Chart QR API (Jaminan 100% tampil tanpa error library lokal)
+      // Render QR Code Image
       const qrImg = document.getElementById('qrImage');
       const qrData = json.qr_string || json.payment_url;
       qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrData)}`;

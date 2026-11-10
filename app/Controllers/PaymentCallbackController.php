@@ -38,7 +38,6 @@ class PaymentCallbackController extends BaseController
 
     /**
      * Endpoint Simulasi Bayar untuk Mode Sandbox
-     * Bisa diklik oleh kamu saat testing tanpa bayar uang asli
      */
     public function simulatePay($orderCode)
     {
@@ -49,7 +48,6 @@ class PaymentCallbackController extends BaseController
             return $this->response->setJSON(['ok' => false, 'msg' => 'Order tidak ditemukan.']);
         }
 
-        // Jalankan pemenuhan order seperti layaknya webhook Duitku sukses
         $res = $this->processOrderFulfillment($orderCode, '00', 'SIMULASI-DUITKU-' . time());
 
         return $this->response->setJSON([
@@ -60,7 +58,7 @@ class PaymentCallbackController extends BaseController
     }
 
     /**
-     * Logika utama proses bayar -> eksekusi Sprintpedia API
+     * Logika utama proses bayar -> eksekusi Sprintpedia API (Single & Massal)
      */
     protected function processOrderFulfillment(string $orderCode, string $resultCode, string $reference)
     {
@@ -82,51 +80,97 @@ class PaymentCallbackController extends BaseController
                 'payment_reference' => $reference,
             ];
 
-            // AUTO DISPATCH KE SPRINTPEDIA API
             $sprintpedia = new SprintpediaService();
-            $serviceId   = $order['provider_service_id'];
-            $apiResult   = $sprintpedia->addOrder($serviceId, $order['target'], (int)$order['jumlah']);
 
-            if (!empty($apiResult['success']) && !empty($apiResult['data']['order'])) {
-                $updateData['provider_order_id'] = (string)$apiResult['data']['order'];
-                $updateData['status_order']      = 'processing';
-                $updateData['catatan']           = 'Pembayaran QRIS sukses & otomatis diproses di server';
-            } else {
-                // Alternatif jika ada
-                $layananModel = new SosmedLayananModel();
-                $layanan = $layananModel->find($order['layanan_id']);
+            // KASUS 1: ORDER MASSAL (BATCH)
+            if (!empty($order['is_mass']) && !empty($order['mass_data'])) {
+                $massList = json_decode($order['mass_data'], true) ?: [];
+                $dispatchedList = [];
+                $successIds = [];
+                $failedCount = 0;
 
-                if (!empty($layanan['provider_service_id_alt'])) {
-                    $altId = $layanan['provider_service_id_alt'];
-                    $apiResultAlt = $sprintpedia->addOrder($altId, $order['target'], (int)$order['jumlah']);
-                    if (!empty($apiResultAlt['success']) && !empty($apiResultAlt['data']['order'])) {
-                        $updateData['provider_service_id'] = $altId;
-                        $updateData['provider_order_id']   = (string)$apiResultAlt['data']['order'];
-                        $updateData['status_order']        = 'processing';
-                        $updateData['catatan']             = 'Order diproses menggunakan server cadangan';
+                foreach ($massList as $item) {
+                    $tgt = $item['target'];
+                    $qty = (int)$item['jumlah'];
+                    $srv = $order['provider_service_id'];
+
+                    $apiRes = $sprintpedia->addOrder($srv, $tgt, $qty);
+                    $provId = null;
+
+                    if (!empty($apiRes['success']) && !empty($apiRes['data']['order'])) {
+                        $provId = (string)$apiRes['data']['order'];
+                        $successIds[] = $provId;
+                    } else {
+                        $failedCount++;
+                    }
+
+                    $dispatchedList[] = [
+                        'target'            => $tgt,
+                        'jumlah'            => $qty,
+                        'provider_order_id' => $provId,
+                        'response'          => $apiRes,
+                    ];
+                }
+
+                $updateData['mass_data']         = json_encode($dispatchedList);
+                $updateData['provider_order_id'] = implode(',', $successIds);
+                $updateData['status_order']      = (count($successIds) > 0) ? 'processing' : 'failed';
+                $updateData['provider_response'] = json_encode(['batch_results' => $dispatchedList]);
+                $updateData['catatan']           = "Order massal (" . count($successIds) . " sukses, " . $failedCount . " gagal kirim)";
+            } 
+            // KASUS 2: ORDER SINGLE (1 TARGET)
+            else {
+                $serviceId = $order['provider_service_id'];
+                $apiResult = $sprintpedia->addOrder($serviceId, $order['target'], (int)$order['jumlah']);
+
+                if (!empty($apiResult['success']) && !empty($apiResult['data']['order'])) {
+                    $updateData['provider_order_id'] = (string)$apiResult['data']['order'];
+                    $updateData['status_order']      = 'processing';
+                    $updateData['catatan']           = 'Pembayaran QRIS sukses & otomatis diproses di server';
+                } else {
+                    // Alternatif jika ada
+                    $layananModel = new SosmedLayananModel();
+                    $layanan = $layananModel->find($order['layanan_id']);
+
+                    if (!empty($layanan['provider_service_id_alt'])) {
+                        $altId = $layanan['provider_service_id_alt'];
+                        $apiResultAlt = $sprintpedia->addOrder($altId, $order['target'], (int)$order['jumlah']);
+                        if (!empty($apiResultAlt['success']) && !empty($apiResultAlt['data']['order'])) {
+                            $updateData['provider_service_id'] = $altId;
+                            $updateData['provider_order_id']   = (string)$apiResultAlt['data']['order'];
+                            $updateData['status_order']        = 'processing';
+                            $updateData['catatan']             = 'Order diproses menggunakan server cadangan';
+                        } else {
+                            $updateData['status_order'] = 'failed';
+                            $updateData['catatan']      = 'Pembayaran sukses, server provider sedang overload. Hubungi admin.';
+                        }
                     } else {
                         $updateData['status_order'] = 'failed';
-                        $updateData['catatan']      = 'Pembayaran sukses, server provider sedang overload. Hubungi admin.';
+                        $updateData['catatan']      = 'Pembayaran sukses, order gagal dikirim ke provider (cek saldo/stok).';
                     }
-                } else {
-                    $updateData['status_order'] = 'failed';
-                    $updateData['catatan']      = 'Pembayaran sukses, order gagal dikirim ke provider (cek saldo/stok).';
                 }
+                $updateData['provider_response'] = json_encode($apiResult);
             }
 
-            $updateData['provider_response'] = json_encode($apiResult);
             $orderModel->update($order['id'], $updateData);
 
             // Kirim Notifikasi Otomatis ke Telegram
             try {
                 $tg = new \App\Libraries\TelegramChannel();
                 if ($tg->isConfigured()) {
+                    $isMass = !empty($order['is_mass']);
                     $provIdText = !empty($updateData['provider_order_id']) ? '#' . $updateData['provider_order_id'] : 'Gagal / Perlu Review';
-                    $msg  = "⚡ *ORDER SOSMED OTOMATIS BERHASIL!*\n\n";
+                    
+                    $msg  = $isMass ? "⚡ *ORDER SOSMED MASSAL BERHASIL!*\n\n" : "⚡ *ORDER SOSMED OTOMATIS BERHASIL!*\n\n";
                     $msg .= "• *Kode Order:* `{$order['order_code']}`\n";
+                    $msg .= "• *Tipe:* " . ($isMass ? "Massal ({$order['mass_count']} baris target)" : "Single Order") . "\n";
                     $msg .= "• *Layanan:* {$order['layanan_nama']}\n";
-                    $msg .= "• *Jumlah:* " . number_format($order['jumlah'], 0, ',', '.') . " pcs\n";
-                    $msg .= "• *Target:* `{$order['target']}`\n";
+                    if ($isMass) {
+                        $msg .= "• *Total Akumulasi:* " . number_format($order['jumlah'], 0, ',', '.') . " pcs\n";
+                    } else {
+                        $msg .= "• *Jumlah:* " . number_format($order['jumlah'], 0, ',', '.') . " pcs\n";
+                        $msg .= "• *Target:* `{$order['target']}`\n";
+                    }
                     $msg .= "• *Total Bayar:* Rp " . number_format($order['harga'], 0, ',', '.') . " (PAID via QRIS)\n";
                     $msg .= "• *WA Pembeli:* " . ($order['wa_buyer'] ?: '-') . "\n";
                     $msg .= "• *ID Server:* `{$provIdText}`\n";

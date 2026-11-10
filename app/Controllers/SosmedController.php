@@ -48,7 +48,6 @@ class SosmedController extends BaseController
             }
         }
 
-        // Data layanan untuk form & kalkulator
         $layananFlat = $this->layananModel->getWithPlatform(true);
 
         return view('sosmed/index', [
@@ -60,18 +59,98 @@ class SosmedController extends BaseController
     }
 
     /**
-     * AJAX Kalkulasi Harga
+     * AJAX Kalkulasi Harga (Mendukung Single & Massal)
      */
     public function hitung()
     {
         $layananId = (int) $this->request->getPost('layanan_id');
-        $jumlah    = (int) $this->request->getPost('jumlah');
+        $isMass    = (int) $this->request->getPost('is_mass');
 
         $layanan = $this->layananModel->find($layananId);
         if (! $layanan || ! $layanan['is_active']) {
             return $this->response->setJSON(['ok' => false, 'msg' => 'Layanan tidak tersedia.']);
         }
 
+        $isViews = (stripos($layanan['nama'], 'views') !== false || stripos($layanan['slug'], 'views') !== false);
+        $pakets  = $this->paketModel->getByLayanan($layananId);
+
+        // KASUS MASSAL
+        if ($isMass === 1) {
+            $rawLines = trim($this->request->getPost('mass_input') ?? '');
+            if (empty($rawLines)) {
+                return $this->response->setJSON(['ok' => false, 'msg' => 'Input orderan massal masih kosong.']);
+            }
+
+            $lines = array_filter(array_map('trim', explode("\n", $rawLines)));
+            if (count($lines) > 50) {
+                return $this->response->setJSON(['ok' => false, 'msg' => 'Maksimal 50 baris/target per sekali submit.']);
+            }
+
+            $parsed = [];
+            $totalHarga = 0;
+            $totalJumlah = 0;
+            $rowErrors = [];
+
+            foreach ($lines as $idx => $line) {
+                $lineNum = $idx + 1;
+                // Format: link|jumlah atau link,jumlah atau link spasi jumlah
+                $parts = preg_split('/[|,;\s]+/', $line);
+                if (count($parts) < 2) {
+                    $rowErrors[] = "Baris #{$lineNum}: Format salah. Gunakan format 'link|jumlah'.";
+                    continue;
+                }
+
+                $qty = (int) end($parts);
+                array_pop($parts);
+                $target = trim(implode(' ', $parts));
+
+                if (empty($target)) {
+                    $rowErrors[] = "Baris #{$lineNum}: Target link/username tidak valid.";
+                    continue;
+                }
+
+                if ($qty < (int) $layanan['min_order'] || $qty > (int) $layanan['max_order']) {
+                    $rowErrors[] = "Baris #{$lineNum}: Jumlah {$qty} di luar batas min/max (" . number_format($layanan['min_order']) . " - " . number_format($layanan['max_order']) . ").";
+                    continue;
+                }
+
+                $calc = hitung_harga_sosmed($pakets, $qty, $isViews);
+                $subHarga = $calc['harga'];
+
+                $totalHarga += $subHarga;
+                $totalJumlah += $qty;
+
+                $parsed[] = [
+                    'line'      => $lineNum,
+                    'target'    => $target,
+                    'jumlah'    => $qty,
+                    'harga'     => $subHarga,
+                    'harga_fmt' => 'Rp ' . number_format($subHarga, 0, ',', '.'),
+                ];
+            }
+
+            if (!empty($rowErrors)) {
+                return $this->response->setJSON([
+                    'ok'     => false,
+                    'msg'    => implode("<br>", array_slice($rowErrors, 0, 5)) . (count($rowErrors) > 5 ? "<br>...dan kesalahan lainnya." : ""),
+                    'errors' => $rowErrors,
+                ]);
+            }
+
+            return $this->response->setJSON([
+                'ok'           => true,
+                'is_mass'      => true,
+                'count'        => count($parsed),
+                'total_jumlah' => $totalJumlah,
+                'harga'        => $totalHarga,
+                'harga_fmt'    => 'Rp ' . number_format($totalHarga, 0, ',', '.'),
+                'layanan'      => $layanan['nama'],
+                'items'        => $parsed,
+            ]);
+        }
+
+        // KASUS SINGLE
+        $jumlah = (int) $this->request->getPost('jumlah');
         if ($jumlah < (int) $layanan['min_order'] || $jumlah > (int) $layanan['max_order']) {
             return $this->response->setJSON([
                 'ok'  => false,
@@ -80,13 +159,11 @@ class SosmedController extends BaseController
             ]);
         }
 
-        $isViews = (stripos($layanan['nama'], 'views') !== false || stripos($layanan['slug'], 'views') !== false);
-        $pakets  = $this->paketModel->getByLayanan($layananId);
-
         $hasil = hitung_harga_sosmed($pakets, $jumlah, $isViews);
 
         return $this->response->setJSON([
             'ok'        => true,
+            'is_mass'   => false,
             'harga'     => $hasil['harga'],
             'harga_fmt' => 'Rp ' . number_format($hasil['harga'], 0, ',', '.'),
             'jumlah'    => $jumlah,
@@ -96,50 +173,99 @@ class SosmedController extends BaseController
     }
 
     /**
-     * AJAX Submit Order (Buat Invoice Duitku QRIS)
+     * AJAX Submit Order (Buat Invoice Duitku QRIS untuk Single & Massal)
      */
     public function order()
     {
         $layananId = (int) $this->request->getPost('layanan_id');
-        $jumlah    = (int) $this->request->getPost('jumlah');
-        $target    = trim($this->request->getPost('target') ?? '');
+        $isMass    = (int) $this->request->getPost('is_mass');
         $waBuyer   = trim($this->request->getPost('wa_buyer') ?? '');
-
-        if (empty($target)) {
-            return $this->response->setJSON(['ok' => false, 'msg' => 'Target (Link Akun / Link Video / Username) wajib diisi.']);
-        }
 
         $layanan = $this->layananModel->find($layananId);
         if (! $layanan || ! $layanan['is_active']) {
             return $this->response->setJSON(['ok' => false, 'msg' => 'Layanan yang dipilih tidak aktif.']);
         }
 
-        if ($jumlah < (int) $layanan['min_order'] || $jumlah > (int) $layanan['max_order']) {
-            return $this->response->setJSON([
-                'ok'  => false,
-                'msg' => "Jumlah tidak sesuai ketentuan (" . number_format($layanan['min_order']) . " - " . number_format($layanan['max_order']) . ").",
-            ]);
-        }
-
         $platform = $this->platformModel->find($layanan['platform_id']);
         $platformNama = $platform['nama'] ?? 'Sosmed';
-
-        // Hitung harga
         $isViews = (stripos($layanan['nama'], 'views') !== false || stripos($layanan['slug'], 'views') !== false);
         $pakets  = $this->paketModel->getByLayanan($layananId);
-        $calc    = hitung_harga_sosmed($pakets, $jumlah, $isViews);
-        $totalHarga = $calc['harga'];
 
-        // Kode Unik Order Zippy Store
         $orderCode = 'ZP-SM-' . date('ymd') . strtoupper(substr(uniqid(), -4));
+        $targetField = '';
+        $massDataJson = null;
+        $massCount = 1;
+        $totalJumlah = 0;
+        $totalHarga = 0;
 
-        // 1. Request Invoice Pembayaran ke Duitku (Metode QRIS: 'SP')
+        // JIKA ORDER MASSAL
+        if ($isMass === 1) {
+            $rawLines = trim($this->request->getPost('mass_input') ?? '');
+            $lines = array_filter(array_map('trim', explode("\n", $rawLines)));
+
+            if (empty($lines)) {
+                return $this->response->setJSON(['ok' => false, 'msg' => 'Data orderan massal tidak boleh kosong.']);
+            }
+            if (count($lines) > 50) {
+                return $this->response->setJSON(['ok' => false, 'msg' => 'Maksimal 50 target sekali checkout.']);
+            }
+
+            $massList = [];
+            foreach ($lines as $idx => $line) {
+                $parts = preg_split('/[|,;\s]+/', $line);
+                if (count($parts) < 2) continue;
+
+                $qty = (int) end($parts);
+                array_pop($parts);
+                $tgt = trim(implode(' ', $parts));
+
+                if (empty($tgt) || $qty < (int)$layanan['min_order'] || $qty > (int)$layanan['max_order']) {
+                    return $this->response->setJSON(['ok' => false, 'msg' => "Terdapat baris target/jumlah yang tidak sesuai ketentuan."]);
+                }
+
+                $calc = hitung_harga_sosmed($pakets, $qty, $isViews);
+                $totalHarga  += $calc['harga'];
+                $totalJumlah += $qty;
+
+                $massList[] = [
+                    'target' => $tgt,
+                    'jumlah' => $qty,
+                    'harga'  => $calc['harga'],
+                ];
+            }
+
+            $massCount    = count($massList);
+            $targetField  = "Batch Order ({$massCount} Target/Konten)";
+            $massDataJson = json_encode($massList);
+        } 
+        // JIKA ORDER SINGLE
+        else {
+            $target = trim($this->request->getPost('target') ?? '');
+            $jumlah = (int) $this->request->getPost('jumlah');
+
+            if (empty($target)) {
+                return $this->response->setJSON(['ok' => false, 'msg' => 'Target (Link Akun / Link Video / Username) wajib diisi.']);
+            }
+            if ($jumlah < (int) $layanan['min_order'] || $jumlah > (int) $layanan['max_order']) {
+                return $this->response->setJSON([
+                    'ok'  => false,
+                    'msg' => "Jumlah tidak sesuai ketentuan (" . number_format($layanan['min_order']) . " - " . number_format($layanan['max_order']) . ").",
+                ]);
+            }
+
+            $calc = hitung_harga_sosmed($pakets, $jumlah, $isViews);
+            $totalHarga  = $calc['harga'];
+            $totalJumlah = $jumlah;
+            $targetField = $target;
+        }
+
+        // Request Invoice Pembayaran ke Duitku (QRIS)
         $duitku = new DuitkuService();
         $duitkuRes = $duitku->createInvoice(
             $orderCode,
             $totalHarga,
             'SP',
-            "{$layanan['nama']} ({$jumlah} pcs)",
+            "{$layanan['nama']} (" . ($isMass ? "Massal {$massCount} target" : "{$totalJumlah} pcs") . ")",
             [
                 'name'  => 'Pelanggan Zippy Store',
                 'email' => 'buyer@zippystore.my.id',
@@ -157,14 +283,17 @@ class SosmedController extends BaseController
             $qrString   = $duitkuRes['data']['qrString'] ?? null;
         }
 
-        // 2. Simpan order ke database dengan status UNPAID
+        // Simpan ke Database
         $orderData = [
             'order_code'          => $orderCode,
+            'is_mass'             => $isMass,
+            'mass_data'           => $massDataJson,
+            'mass_count'          => $massCount,
             'platform_nama'       => $platformNama,
             'layanan_id'          => $layanan['id'],
             'layanan_nama'        => $layanan['nama'],
-            'target'              => $target,
-            'jumlah'              => $jumlah,
+            'target'              => $targetField,
+            'jumlah'              => $totalJumlah,
             'harga'               => $totalHarga,
             'wa_buyer'            => $waBuyer,
             'provider_service_id' => $layanan['provider_service_id'],
@@ -174,20 +303,22 @@ class SosmedController extends BaseController
             'payment_reference'   => $reference,
             'payment_url'         => $paymentUrl,
             'payment_method'      => 'QRIS',
-            'catatan'             => 'Menunggu pembayaran QRIS dari pembeli',
+            'catatan'             => $isMass ? "Menunggu pembayaran QRIS untuk order massal ({$massCount} target)" : 'Menunggu pembayaran QRIS dari pembeli',
         ];
 
         $this->orderModel->insert($orderData);
 
         return $this->response->setJSON([
             'ok'          => true,
+            'is_mass'     => ($isMass === 1),
+            'mass_count'  => $massCount,
             'order_code'  => $orderCode,
             'payment_url' => $paymentUrl,
             'qr_string'   => $qrString,
             'harga_fmt'   => 'Rp ' . number_format($totalHarga, 0, ',', '.'),
             'layanan'     => $layanan['nama'],
-            'target'      => $target,
-            'jumlah'      => $jumlah,
+            'target'      => $targetField,
+            'jumlah'      => $totalJumlah,
             'msg'         => 'Invoice pembayaran QRIS berhasil dibuat!',
         ]);
     }
@@ -205,6 +336,8 @@ class SosmedController extends BaseController
         return $this->response->setJSON([
             'ok'                => true,
             'order_code'        => $order['order_code'],
+            'is_mass'           => !empty($order['is_mass']),
+            'mass_count'        => $order['mass_count'] ?? 1,
             'status_pembayaran' => $order['status_pembayaran'],
             'status_order'      => $order['status_order'],
             'provider_order_id' => $order['provider_order_id'],
