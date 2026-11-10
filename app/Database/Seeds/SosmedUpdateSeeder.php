@@ -10,26 +10,26 @@ class SosmedUpdateSeeder extends Seeder
     {
         $db = $this->db;
 
-        // Matikan foreign key checks sementara untuk reset data
         $db->query('SET FOREIGN_KEY_CHECKS = 0');
         $db->table('sosmed_paket')->truncate();
         $db->table('sosmed_layanan')->truncate();
         $db->table('sosmed_platform')->truncate();
         $db->query('SET FOREIGN_KEY_CHECKS = 1');
 
-        // 1. Insert Platforms (1: TikTok, 2: Instagram)
+        // 1. PLATFORMS (1: TikTok, 2: Instagram, 3: YouTube)
         $platforms = [
             ['id' => 1, 'nama' => 'TikTok', 'slug' => 'tiktok', 'icon' => 'fab fa-tiktok', 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
             ['id' => 2, 'nama' => 'Instagram', 'slug' => 'instagram', 'icon' => 'fab fa-instagram', 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+            ['id' => 3, 'nama' => 'YouTube', 'slug' => 'youtube', 'icon' => 'fab fa-youtube', 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
         ];
         $db->table('sosmed_platform')->insertBatch($platforms);
 
-        // 2. Insert Layanan
+        // 2. LAYANAN
         $layanans = [
             // Instagram
             [
                 'id' => 1,
-                'platform_id' => 2, // IG
+                'platform_id' => 2,
                 'nama' => 'Followers Instagram',
                 'slug' => 'followers-instagram',
                 'provider_service_id' => '4320',
@@ -41,7 +41,7 @@ class SosmedUpdateSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'platform_id' => 2, // IG
+                'platform_id' => 2,
                 'nama' => 'Likes Instagram',
                 'slug' => 'likes-instagram',
                 'provider_service_id' => '4524',
@@ -53,7 +53,7 @@ class SosmedUpdateSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'platform_id' => 2, // IG
+                'platform_id' => 2,
                 'nama' => 'Views Instagram',
                 'slug' => 'views-instagram',
                 'provider_service_id' => '3989',
@@ -67,7 +67,7 @@ class SosmedUpdateSeeder extends Seeder
             // TikTok
             [
                 'id' => 4,
-                'platform_id' => 1, // TikTok
+                'platform_id' => 1,
                 'nama' => 'Views TikTok',
                 'slug' => 'views-tiktok',
                 'provider_service_id' => '1181',
@@ -79,7 +79,7 @@ class SosmedUpdateSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'platform_id' => 1, // TikTok
+                'platform_id' => 1,
                 'nama' => 'Followers TikTok LQ (Low Quality)',
                 'slug' => 'followers-tiktok-lq',
                 'provider_service_id' => '3941',
@@ -91,7 +91,7 @@ class SosmedUpdateSeeder extends Seeder
             ],
             [
                 'id' => 6,
-                'platform_id' => 1, // TikTok
+                'platform_id' => 1,
                 'nama' => 'Followers TikTok HQ (High Quality)',
                 'slug' => 'followers-tiktok-hq',
                 'provider_service_id' => '4736',
@@ -103,7 +103,7 @@ class SosmedUpdateSeeder extends Seeder
             ],
             [
                 'id' => 7,
-                'platform_id' => 1, // TikTok
+                'platform_id' => 1,
                 'nama' => 'Likes TikTok',
                 'slug' => 'likes-tiktok',
                 'provider_service_id' => '4379',
@@ -113,10 +113,48 @@ class SosmedUpdateSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
             ],
+
+            // YouTube
+            [
+                'id' => 8,
+                'platform_id' => 3,
+                'nama' => 'Subscribers YouTube',
+                'slug' => 'subscribers-youtube',
+                'provider_service_id' => '4558',
+                'provider_service_id_alt' => null,
+                'min_order' => 50,
+                'max_order' => 100000,
+                'is_active' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'id' => 9,
+                'platform_id' => 3,
+                'nama' => 'Likes YouTube',
+                'slug' => 'likes-youtube',
+                'provider_service_id' => '2539',
+                'provider_service_id_alt' => null,
+                'min_order' => 100,
+                'max_order' => 100000,
+                'is_active' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'id' => 10,
+                'platform_id' => 3,
+                'nama' => 'Views YouTube',
+                'slug' => 'views-youtube',
+                'provider_service_id' => '2330',
+                'provider_service_id_alt' => null,
+                'min_order' => 100,
+                'max_order' => 1000000,
+                'is_active' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
         ];
         $db->table('sosmed_layanan')->insertBatch($layanans);
 
-        // 3. Insert Paket
+        // 3. PAKET
         $pakets = [
             // Instagram Followers (100: 10k, 200: 18k, 500: 40k, 1000: 70k)
             ['layanan_id' => 1, 'jumlah' => 100, 'harga' => 10000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
@@ -154,6 +192,22 @@ class SosmedUpdateSeeder extends Seeder
             ['layanan_id' => 7, 'jumlah' => 100, 'harga' => 5000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
             ['layanan_id' => 7, 'jumlah' => 500, 'harga' => 18000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
             ['layanan_id' => 7, 'jumlah' => 1000, 'harga' => 30000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+
+            // YouTube Subscribers (50: 90k, 100: 150k, 500: 650k, 1000: 1jt)
+            ['layanan_id' => 8, 'jumlah' => 50, 'harga' => 90000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+            ['layanan_id' => 8, 'jumlah' => 100, 'harga' => 150000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+            ['layanan_id' => 8, 'jumlah' => 500, 'harga' => 650000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+            ['layanan_id' => 8, 'jumlah' => 1000, 'harga' => 1000000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+
+            // YouTube Likes (100: 8k, 500: 35k, 1000: 60k)
+            ['layanan_id' => 9, 'jumlah' => 100, 'harga' => 8000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+            ['layanan_id' => 9, 'jumlah' => 500, 'harga' => 35000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+            ['layanan_id' => 9, 'jumlah' => 1000, 'harga' => 60000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+
+            // YouTube Views (100: 7.5k, 500: 30k, 1000: 55k)
+            ['layanan_id' => 10, 'jumlah' => 100, 'harga' => 7500, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+            ['layanan_id' => 10, 'jumlah' => 500, 'harga' => 30000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
+            ['layanan_id' => 10, 'jumlah' => 1000, 'harga' => 55000, 'is_active' => 1, 'created_at' => date('Y-m-d H:i:s')],
         ];
         $db->table('sosmed_paket')->insertBatch($pakets);
     }

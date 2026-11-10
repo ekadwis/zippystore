@@ -71,7 +71,9 @@ class SosmedController extends BaseController
             return $this->response->setJSON(['ok' => false, 'msg' => 'Layanan tidak tersedia.']);
         }
 
-        $isViews = (stripos($layanan['nama'], 'views') !== false || stripos($layanan['slug'], 'views') !== false);
+        $platform = $this->platformModel->find($layanan['platform_id']);
+        $platformSlug = strtolower($platform['slug'] ?? '');
+        $isIgTtViews = (in_array($platformSlug, ['instagram', 'tiktok']) && (stripos($layanan['nama'], 'views') !== false || stripos($layanan['slug'], 'views') !== false));
         $pakets  = $this->paketModel->getByLayanan($layananId);
 
         // KASUS MASSAL
@@ -114,7 +116,7 @@ class SosmedController extends BaseController
                     continue;
                 }
 
-                $calc = hitung_harga_sosmed($pakets, $qty, $isViews);
+                $calc = hitung_harga_sosmed($pakets, $qty, $isIgTtViews);
                 $subHarga = $calc['harga'];
 
                 $totalHarga += $subHarga;
@@ -159,7 +161,7 @@ class SosmedController extends BaseController
             ]);
         }
 
-        $hasil = hitung_harga_sosmed($pakets, $jumlah, $isViews);
+        $hasil = hitung_harga_sosmed($pakets, $jumlah, $isIgTtViews);
 
         return $this->response->setJSON([
             'ok'        => true,
@@ -188,7 +190,9 @@ class SosmedController extends BaseController
 
         $platform = $this->platformModel->find($layanan['platform_id']);
         $platformNama = $platform['nama'] ?? 'Sosmed';
-        $isViews = (stripos($layanan['nama'], 'views') !== false || stripos($layanan['slug'], 'views') !== false);
+        $platform = $this->platformModel->find($layanan['platform_id']);
+        $platformSlug = strtolower($platform['slug'] ?? '');
+        $isIgTtViews = (in_array($platformSlug, ['instagram', 'tiktok']) && (stripos($layanan['nama'], 'views') !== false || stripos($layanan['slug'], 'views') !== false));
         $pakets  = $this->paketModel->getByLayanan($layananId);
 
         $orderCode = 'ZP-SM-' . date('ymd') . strtoupper(substr(uniqid(), -4));
@@ -223,7 +227,7 @@ class SosmedController extends BaseController
                     return $this->response->setJSON(['ok' => false, 'msg' => "Terdapat baris target/jumlah yang tidak sesuai ketentuan."]);
                 }
 
-                $calc = hitung_harga_sosmed($pakets, $qty, $isViews);
+                $calc = hitung_harga_sosmed($pakets, $qty, $isIgTtViews);
                 $totalHarga  += $calc['harga'];
                 $totalJumlah += $qty;
 
@@ -253,7 +257,7 @@ class SosmedController extends BaseController
                 ]);
             }
 
-            $calc = hitung_harga_sosmed($pakets, $jumlah, $isViews);
+            $calc = hitung_harga_sosmed($pakets, $jumlah, $isIgTtViews);
             $totalHarga  = $calc['harga'];
             $totalJumlah = $jumlah;
             $targetField = $target;
