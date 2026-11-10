@@ -1,145 +1,52 @@
 <?= $this->include('template/header') ?>
 
 <?php
-    $telegram    = $telegramLink ?? 'https://t.me/klddies';
-    $fromTg      = $fromTelegram ?? false;
-
-    function testiSrc($g) {
-        if (empty($g)) return '';
-        return (str_starts_with($g, 'http://') || str_starts_with($g, 'https://'))
-            ? $g : base_url($g);
-    }
-
-    $list = !empty($testimoni) ? $testimoni : [];
+    $telegram = $telegramLink ?? 'https://t.me/' . env('telegram.channelUsername', 'klddies');
 ?>
 
-<!-- HERO -->
-<header class="section text-center" style="padding-top:140px;padding-bottom:40px">
-  <div class="container">
+<!-- HERO & TELEGRAM REDIRECT -->
+<section class="section text-center" style="padding-top:160px;padding-bottom:100px">
+  <div class="container" style="max-width:760px">
+    
     <div class="d-inline-flex align-items-center gap-2 mb-3 reveal">
-      <span class="badge-trust">BUKTI &amp; ARSIP REAL-TIME</span>
+      <span class="badge-trust">🛡️ RESMI &amp; TRANSPARAN</span>
       <span class="badge-trust">1.000–5.000+ Transaksi Sukses</span>
     </div>
-    <h1 class="fw-bold reveal">
-      Bukti Nyata &amp; <span class="text-grad">Testimoni Pelanggan</span>
+
+    <h1 class="fw-bold display-6 mb-3 reveal">
+      Arsip &amp; Bukti <span class="text-grad">Testimoni Pelanggan</span>
     </h1>
-    <p class="text-muted-2 reveal mx-auto" style="max-width:680px">
-      Transparansi adalah komitmen utama kami sejak 2019. Seluruh tangkapan layar kepuasan pelanggan diarsipkan secara publik dan dapat dicek langsung via channel Telegram kami.
+
+    <p class="text-muted-2 reveal mx-auto mb-4" style="max-width:600px;font-size:1.05rem;line-height:1.7">
+      Demi menjaga transparansi dan keaslian tanpa rekayasa, seluruh tangkapan layar bukti pengerjaan, testimoni pelanggan, dan riwayat transaksi Zippy Store sejak 2019 diarsipkan langsung secara realtime di <strong>Channel Telegram Resmi</strong> kami.
     </p>
-  </div>
-</header>
 
-<!-- BANNER TELEGRAM -->
-<section class="pt-0" style="padding-bottom:32px">
-  <div class="container">
-    <div class="telegram-banner d-flex align-items-center gap-3 flex-wrap reveal">
-      <div class="tg-ico">✈️</div>
-      <div class="flex-grow-1">
-        <h3 class="h6 mb-1">
-          <?php if ($fromTg): ?>
-            Menampilkan 16 foto terbaru langsung dari channel Telegram kami
-          <?php else: ?>
-            Semua testimoni asli ada di Telegram kami
-          <?php endif; ?>
-        </h3>
-        <p class="text-muted-2 small mb-0">
-          <?php if ($fromTg): ?>
-            Foto diperbarui otomatis setiap 30 menit dari
-            <a href="<?= esc($telegram) ?>" target="_blank" class="text-accent"><?= esc($telegram) ?></a>.
-          <?php else: ?>
-            Arsip lengkap & real-time bisa kamu cek langsung di channel Telegram kami.
-          <?php endif; ?>
-        </p>
+    <!-- BOX TELEGRAM CALL TO ACTION -->
+    <div class="zp-card p-4 p-md-5 reveal text-center my-4" style="background:#f0fdf4; border:2px solid var(--zp-border-solid); box-shadow:6px 6px 0px 0px #18181b">
+      <div style="font-size:56px; margin-bottom:12px">✈️</div>
+      <h3 class="h4 fw-bold mb-2">Lihat Ribuan Bukti di Telegram</h3>
+      <p class="text-muted-2 small mb-4 mx-auto" style="max-width:480px">
+        Bergabunglah bersama ratusan member lainnya dan cek langsung riwayat kepuasan pelanggan Zippy Store kapan saja tanpa sensor.
+      </p>
+
+      <a href="<?= esc($telegram) ?>" target="_blank" rel="noopener" class="btn btn-accent btn-lg px-5 py-3 fw-bold d-inline-flex align-items-center gap-2 shadow-sm">
+        <i class="fab fa-telegram-plane"></i> Buka Channel Testimoni Telegram &rarr;
+      </a>
+      
+      <div class="mt-3 text-muted-2 small">
+        Atau buka link: <a href="<?= esc($telegram) ?>" target="_blank" class="fw-semibold text-accent"><?= esc($telegram) ?></a>
       </div>
-      <a href="<?= esc($telegram) ?>" target="_blank" class="btn btn-accent px-4">Buka Telegram</a>
     </div>
-  </div>
-</section>
 
-<!-- GRID FOTO -->
-<section class="pt-0">
-  <div class="container">
-    <?php if (!empty($list)): ?>
-      <div class="testi-grid">
-        <?php foreach ($list as $t): ?>
-          <?php $src = testiSrc($t['gambar']); ?>
-          <div class="testi-photo reveal" data-full="<?= esc($src, 'attr') ?>">
-            <img src="<?= esc($src, 'attr') ?>"
-                 alt="Testimoni <?= esc($t['nama'] ?? 'Zippy Store') ?>"
-                 loading="lazy"
-                 onerror="this.closest('.testi-photo').style.display='none'">
-            <div class="zoom-ico">🔍</div>
-          </div>
-        <?php endforeach; ?>
-      </div>
-
-      <!-- See all -> Telegram -->
-      <div class="text-center mt-5 reveal">
-        <p class="text-muted-2 small mb-3">
-          Menampilkan <?= count($list) ?> foto terbaru.
-          Mau lihat semuanya?
-        </p>
-        <a href="<?= esc($telegram) ?>" target="_blank" class="btn btn-accent btn-lg px-5">
-          ✈️ Lihat Semua di Telegram
-        </a>
-      </div>
-
-    <?php else: ?>
-      <!-- Fallback: tidak ada foto dari Telegram -->
-      <div class="empty reveal">
-        <div class="em">📷</div>
-        <p class="mb-3">Foto testimoni sedang dimuat dari Telegram…</p>
-        <a href="<?= esc($telegram) ?>" target="_blank" class="btn btn-accent px-4">
-          ✈️ Cek Langsung di Telegram
-        </a>
-      </div>
-    <?php endif; ?>
-  </div>
-</section>
-
-<!-- NOTICE KEASLIAN -->
-<section class="pt-0">
-  <div class="container">
-    <div class="testi-notice reveal">
-      <h4>⚠️ Pemberitahuan Keaslian & Hak Cipta</h4>
-      <p>
-        Seluruh testimoni dan screenshot yang ditampilkan di halaman ini adalah <strong>asli</strong> dan merupakan
-        hak milik Zippy Store. Dilarang keras mengambil, menyalin, mengunduh, mengedit, atau menggunakan kembali
-        gambar maupun konten testimoni ini tanpa izin tertulis dari Zippy Store, baik untuk keperluan pribadi maupun komersial.
-        <br><br>
-        Pelanggaran atas ketentuan ini dapat dikenakan <strong>sanksi denda hingga Rp 50.000.000 (lima puluh juta rupiah)</strong>
-        dan/atau tuntutan hukum sesuai peraturan perundang-undangan yang berlaku di Republik Indonesia, termasuk namun tidak
-        terbatas pada Undang-Undang Nomor 28 Tahun 2014 tentang Hak Cipta dan Undang-Undang Nomor 11 Tahun 2008 tentang
-        Informasi dan Transaksi Elektronik (UU ITE) beserta perubahannya.
-        <br><br>
-        Dengan mengakses halaman ini, Anda dianggap telah membaca, memahami, dan menyetujui ketentuan tersebut.
+    <!-- NOTICE KEASLIAN -->
+    <div class="testi-notice reveal text-start mt-5">
+      <h4>⚠️ Pemberitahuan Keaslian &amp; Hak Cipta</h4>
+      <p class="small text-muted-2 mb-0" style="line-height:1.6">
+        Seluruh testimoni dan tangkapan layar yang ada di channel Telegram resmi adalah <strong>asli</strong> dan merupakan hak milik Zippy Store. Dilarang keras mengambil, menyalin, mengunduh, mengedit, atau menggunakan kembali bukti testimoni tanpa izin tertulis dari Zippy Store.
       </p>
     </div>
+
   </div>
 </section>
 
-<!-- Lightbox (Bootstrap modal) -->
-<div class="modal fade" id="testiModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="background:#ffffff;border:2px solid #18181b;box-shadow:6px 6px 0px 0px #18181b">
-      <div class="modal-body p-2 position-relative text-center">
-        <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" style="z-index:2"></button>
-        <img src="" alt="Testimoni" style="max-height:80vh;max-width:100%;border-radius:8px;border:2px solid #18181b" id="testiModalImg">
-      </div>
-    </div>
-  </div>
-</div>
-
 <?= $this->include('template/footer') ?>
-
-<script>
-  // Lightbox zoom (pakai Bootstrap modal yang sudah ada di footer bundle)
-  const modalEl  = document.getElementById('testiModal');
-  const modalImg = document.getElementById('testiModalImg');
-  document.querySelectorAll('.testi-photo').forEach(box => {
-    box.addEventListener('click', () => {
-      modalImg.src = box.dataset.full;
-      bootstrap.Modal.getOrCreateInstance(modalEl).show();
-    });
-  });
-</script>

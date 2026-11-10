@@ -39,12 +39,10 @@ Penyediaan akun legal/resmi untuk platform hiburan dan produktivitas harian.
   - Kreativitas & Editing: Canva Pro, CapCut Pro.
   - AI Cerdas: Gemini PRO.
 - **Promo Aktif Saat Ini**:
-  - **Promo Minggu Ini (s/d 18 Oktober 2026 pukul 23:59)**:
-    * Netflix 1P1U 7 Hari: Rp 9.000 (Harga normal Rp 14.000).
-  - **Promo Spesial Bulan Oktober 2026**:
-    * Canva Pro 3 Bulan: Rp 5.000 (Harga normal Rp 12.000).
-    * Canva Pro 12 Bulan (1 Tahun): Rp 15.000 (Harga normal Rp 35.000).
-    * Gemini PRO 6 Bulan: Rp 50.000.
+  - **Promo Spesial Hari Pahlawan (s/d 15 November 2026 pukul 23:59)**:
+    * Netflix 1P1U 7 Hari: Rp 10.000 (Stok 13, Terjual 7).
+    * Canva Pro Edu 12 Bulan (1 Tahun): Rp 8.000 (Stok 90, Terjual 40).
+    * Gemini PRO 6 Bulan: Rp 50.000 (Stok 10, Terjual 7).
 - **SOP Garansi After-Sales**:
   - Paket 1 Bulan: Masa garansi 25–30 hari (terhitung full sebulan).
   - Paket Mingguan: Masa garansi 7 hari penuh.

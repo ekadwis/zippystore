@@ -457,42 +457,6 @@ $waLink   = 'https://wa.me/' . $waNumber;
   </div>
 </section>
 
-<!-- TESTIMONI ASLI -->
-<section class="section pt-0">
-  <div class="container">
-    <div class="text-center mb-4 reveal">
-      <h2 class="section-title">Apa Kata Mereka?</h2>
-      <p class="section-sub">Ulasan dan cerita nyata dari pelanggan yang sudah dibantu oleh tim Zippy Store</p>
-    </div>
-
-    <?php if (!empty($testimoni)): ?>
-      <div class="row g-4">
-        <?php foreach (array_slice($testimoni, 0, 3) as $t): ?>
-          <div class="col-md-6 col-lg-4 reveal">
-            <div class="zp-card p-4">
-              <div class="d-flex align-items-center gap-3 mb-3">
-                <div style="width:44px;height:44px;border-radius:8px;background:var(--accent-main);border:2px solid var(--zp-border-solid);box-shadow:2px 2px 0px 0px #18181b;display:flex;align-items:center;justify-content:center;color:#18181b;font-weight:900;font-size:18px">
-                  <?= strtoupper(substr($t['nama'] ?? 'U', 0, 1)) ?>
-                </div>
-                <div>
-                  <h6 class="mb-0" style="font-size:14px"><?= esc($t['nama']) ?></h6>
-                  <?php if (!empty($t['layanan'])): ?>
-                    <small class="text-muted-2"><?= esc($t['layanan']) ?></small>
-                  <?php endif; ?>
-                </div>
-              </div>
-              <p class="small mb-0" style="color:var(--zp-ink-2);line-height:1.6">&ldquo;<?= esc($t['pesan'] ?? $t['isi'] ?? '') ?>&rdquo;</p>
-            </div>
-          </div>
-        <?php endforeach; ?>
-      </div>
-      <div class="text-center mt-4 reveal">
-        <a href="<?= base_url('testimonials') ?>" class="btn btn-outline-accent px-4 py-2">Lihat Bukti &amp; Arsip Testimoni &rarr;</a>
-      </div>
-    <?php endif; ?>
-  </div>
-</section>
-
 <!-- FAQ SECTION (NEO-BRUTALIST TILES) -->
 <section class="section pt-0">
   <div class="container" style="max-width:840px">
