@@ -9,240 +9,186 @@
     $platSet[$p['platform_nama']] = true; 
     $layananSet[$p['layanan_nama'].$p['platform_nama']] = true; 
   }
-
-  // Sample data tiket pesanan & joki terintegrasi
-  $sampleOrders = [
-    [
-      'ticket_id' => '#ZP-JK-9041',
-      'client' => 'Rian H. (Univ. Brawijaya)',
-      'service' => 'Joki Debug Code Python (FastAPI & MySQL)',
-      'pillar' => 'Asistensi IT & Joki',
-      'pillar_class' => 'badge-status-joki',
-      'nominal' => 175000,
-      'status' => 'Dikerjakan (IT/Joki)',
-      'status_class' => 'badge-status-joki',
-      'time' => 'Deadline 6 Jam lagi'
-    ],
-    [
-      'ticket_id' => '#ZP-PR-8820',
-      'client' => 'Amanda Putri',
-      'service' => 'Netflix Premium 4K UHD (Private 1 Bulan)',
-      'pillar' => 'Aplikasi Premium',
-      'pillar_class' => 'badge-status-selesai',
-      'nominal' => 38000,
-      'status' => 'Klaim Garansi (25–30 Hari)',
-      'status_class' => 'badge-status-garansi',
-      'time' => 'Masa Aktif s/d 28 Hari'
-    ],
-    [
-      'ticket_id' => '#ZP-JK-9038',
-      'client' => 'Bima Sakti',
-      'service' => 'Olah Data Statistik SPSS & Excel Pivot',
-      'pillar' => 'Asistensi IT & Joki',
-      'pillar_class' => 'badge-status-joki',
-      'nominal' => 120000,
-      'status' => 'Revisi',
-      'status_class' => 'badge-status-revisi',
-      'time' => 'Revisi Minor #1'
-    ],
-    [
-      'ticket_id' => '#ZP-SM-7714',
-      'client' => 'Creative Hub ID',
-      'service' => 'SMM Boost Instagram 5.000 Follower HQ',
-      'pillar' => 'Kebutuhan Sosmed',
-      'pillar_class' => 'badge-plat',
-      'nominal' => 110000,
-      'status' => 'Belum Diproses',
-      'status_class' => 'badge-status-pending',
-      'time' => 'Order Masuk 20m lalu'
-    ],
-    [
-      'ticket_id' => '#ZP-PR-8815',
-      'client' => 'Dimas Arya',
-      'service' => 'Spotify Premium Individual (3 Bulan)',
-      'pillar' => 'Aplikasi Premium',
-      'pillar_class' => 'badge-status-selesai',
-      'nominal' => 32000,
-      'status' => 'Selesai',
-      'status_class' => 'badge-status-selesai',
-      'time' => 'Transaksi Sukses'
-    ]
-  ];
 ?>
 
-<!-- 1. STAT CARDS & METRIK RINGKAS (NEO-BRUTALIST CHUNKY POP) -->
+<!-- 1. STAT CARDS & METRIK RINGKAS -->
 <div class="row g-3 mb-4">
-  <!-- Card 1: Total Order -->
   <div class="col-6 col-xl-3">
     <div class="stat stat-cat-omzet">
       <div class="d-flex justify-content-between align-items-center mb-1">
-        <span class="lbl">TOTAL ORDER</span>
+        <span class="lbl">TOTAL ORDER SMM</span>
         <span style="font-size: 1.25rem;">📦</span>
       </div>
-      <div class="num">1.482+</div>
-      <small class="text-muted fw-bold">Sejak 2019 • Transparan</small>
+      <div class="val text-dark"><?= number_format($totalOrdersCount ?? 0) ?></div>
+      <div class="badge-trend trend-neutral mt-2">
+        <span>⚡ Auto Dispatch API</span>
+      </div>
     </div>
   </div>
 
-  <!-- Card 2: Omzet Bulanan -->
   <div class="col-6 col-xl-3">
-    <div class="stat stat-cat-omzet">
+    <div class="stat stat-cat-volume">
       <div class="d-flex justify-content-between align-items-center mb-1">
-        <span class="lbl">OMZET BULANAN</span>
+        <span class="lbl">SALDO SPRINTPEDIA</span>
         <span style="font-size: 1.25rem;">💳</span>
       </div>
-      <div class="num" style="font-size: 1.55rem;">Rp 14,8 Jt</div>
-      <small class="text-muted fw-bold">Metode Utama QRIS &amp; Bank</small>
-    </div>
-  </div>
-
-  <!-- Card 3: Tiket Joki Aktif (Amber) -->
-  <div class="col-6 col-xl-3">
-    <div class="stat stat-cat-joki">
-      <div class="d-flex justify-content-between align-items-center mb-1">
-        <span class="lbl">TIKET JOKI AKTIF</span>
-        <span style="font-size: 1.25rem;">💻</span>
+      <div class="val text-primary" style="font-size:1.4rem">
+        <?= !empty($sprintpediaBalance) ? 'Rp ' . number_format((float)$sprintpediaBalance, 0, ',', '.') : 'Terkoneksi' ?>
       </div>
-      <div class="num" style="color: #b45309;">8 Antrean</div>
-      <small class="text-muted fw-bold">IT Coding &amp; Olah Data</small>
-    </div>
-  </div>
-
-  <!-- Card 4: Klaim Garansi Akun (Mint) -->
-  <div class="col-6 col-xl-3">
-    <div class="stat stat-cat-app">
-      <div class="d-flex justify-content-between align-items-center mb-1">
-        <span class="lbl">GARANSI AKUN AKTIF</span>
-        <span style="font-size: 1.25rem;">🛡️</span>
+      <div class="badge-trend trend-up mt-2">
+        <span>● Server Live &amp; Ready</span>
       </div>
-      <div class="num" style="color: #047857;">25–30 Hari</div>
-      <small class="text-muted fw-bold">2 Tiket Dipantau Admin</small>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+    <div class="stat stat-cat-layanan">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <span class="lbl">LAYANAN AKTIF</span>
+        <span style="font-size: 1.25rem;">🛠️</span>
+      </div>
+      <div class="val text-dark"><?= count($layananSet) ?> <small style="font-size:0.9rem;font-weight:600">Layanan</small></div>
+      <div class="badge-trend trend-up mt-2">
+        <span><?= count($platSet) ?> Platform (IG &amp; TT)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+    <div class="stat stat-cat-garansi">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <span class="lbl">PAKET TERSEDIA</span>
+        <span style="font-size: 1.25rem;">🏷️</span>
+      </div>
+      <div class="val text-dark"><?= $totalPaket ?> <small style="font-size:0.9rem;font-weight:600">Paket</small></div>
+      <div class="badge-trend trend-up mt-2">
+        <span>Tersedia LQ, HQ &amp; Views</span>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- QUICK ACTION BAR -->
-<div class="zp-card p-3 mb-4" style="background: #fef08a;">
-  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-    <div class="d-flex align-items-center gap-2">
-      <span class="badge" style="background:#ef4444; color:#fff; border-color:#18181b;">FLASH SALE AKTIF</span>
-      <span class="fw-bold small">Jumbotron promo sedang tayang di domain resmi <strong>zippystore.my.id</strong></span>
-    </div>
-    <div class="d-flex gap-2 flex-wrap">
-      <a href="<?= site_url('admin/flash-sale') ?>" class="btn btn-sm btn-accent">⚡ Kelola Flash Sale</a>
-      <a href="<?= site_url('admin/sosmed/kalkulator') ?>" class="btn btn-sm btn-outline-accent">🧮 Buka Kalkulator</a>
-      <a href="<?= site_url('/') ?>" target="_blank" class="btn btn-sm btn-outline-accent">🏠 Lihat Web</a>
-    </div>
-  </div>
-</div>
-
-<!-- 2. TABEL MANAJEMEN PESANAN & TIKET JOKI -->
-<div class="zp-card p-3 p-md-4 mb-4">
-  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+<!-- 2. RIWAYAT PESANAN REALTIME (AUTO ORDERS) -->
+<div class="card neo-card mb-4">
+  <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
     <div>
-      <h2 class="h5 mb-1">📋 Manajemen Pesanan, Tiket Joki, &amp; Layanan</h2>
-      <p class="text-muted small mb-0">Pantau status pengerjaan, deadline tugas, dan jaminan after-sales garansi.</p>
+      <h5 class="mb-0 fw-bold">📋 Riwayat Pesanan Otomatis (Sosmed SMM)</h5>
+      <small class="text-muted">Data pesanan pembeli yang langsung terhubung ke Sprintpedia API</small>
     </div>
-    <div class="d-flex gap-2">
-      <span class="badge badge-status-joki">Dikerjakan: 1</span>
-      <span class="badge badge-status-garansi">Garansi: 1</span>
-      <span class="badge badge-status-revisi">Revisi: 1</span>
-    </div>
+    <span class="badge bg-success px-3 py-2 text-white">Realtime Database</span>
   </div>
-
-  <div class="table-responsive">
-    <table class="table align-middle">
-      <thead>
-        <tr>
-          <th>ID Slip</th>
-          <th>Klien &amp; Instansi</th>
-          <th>Layanan Terpesan</th>
-          <th>Nominal</th>
-          <th>Catatan Waktu</th>
-          <th>Status Pengerjaan</th>
-          <th class="text-end">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php foreach ($sampleOrders as $o): ?>
-          <tr>
-            <td>
-              <strong style="font-family:monospace;"><?= esc($o['ticket_id']) ?></strong>
-            </td>
-            <td>
-              <div class="fw-bold"><?= esc($o['client']) ?></div>
-            </td>
-            <td>
-              <div class="fw-semibold"><?= esc($o['service']) ?></div>
-              <small class="badge <?= esc($o['pillar_class']) ?>" style="font-size:10px; padding:2px 8px;"><?= esc($o['pillar']) ?></small>
-            </td>
-            <td>
-              <strong>Rp <?= number_format($o['nominal'], 0, ',', '.') ?></strong>
-            </td>
-            <td>
-              <small class="text-muted fw-bold"><?= esc($o['time']) ?></small>
-            </td>
-            <td>
-              <span class="badge <?= esc($o['status_class']) ?>">
-                <?= esc($o['status']) ?>
-              </span>
-            </td>
-            <td class="text-end">
-              <button type="button" class="btn btn-sm btn-outline-accent" onclick="alert('Tiket <?= esc($o['ticket_id']) ?>: Detail & update status WhatsApp siap dihubungi!')">
-                Detail
-              </button>
-            </td>
-          </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- 3. TABEL KATALOG PAKET AKTIF -->
-<div class="zp-card p-3 p-md-4">
-  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <div>
-      <h2 class="h5 mb-1">📦 Daftar Paket Sosmed Aktif</h2>
-      <p class="text-muted small mb-0">Total <?= $totalPaket ?> paket dari <?= count($platSet) ?> platform terdaftar.</p>
-    </div>
-    <a href="<?= site_url('admin/sosmed/paket/create') ?>" class="btn btn-accent btn-sm">+ Tambah Paket Baru</a>
-  </div>
-
-  <?php if (!empty($pakets)): ?>
+  <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table align-middle">
-        <thead>
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
           <tr>
-            <th>#</th>
-            <th>Platform</th>
+            <th>Kode Order</th>
             <th>Layanan</th>
-            <th>Jumlah Satuan</th>
-            <th>Harga Resmi</th>
-            <th class="text-end">Aksi</th>
+            <th>Target Link / Username</th>
+            <th>Jumlah</th>
+            <th>Harga</th>
+            <th>Sprintpedia ID</th>
+            <th>Status</th>
+            <th>Waktu</th>
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($pakets as $i => $p): ?>
+          <?php if (!empty($orders)): ?>
+            <?php foreach ($orders as $ord): ?>
+              <tr>
+                <td>
+                  <span class="font-monospace fw-bold text-dark"><?= esc($ord['order_code']) ?></span>
+                  <?php if (!empty($ord['wa_buyer'])): ?>
+                    <br><small class="text-muted"><i class="fab fa-whatsapp text-success"></i> <?= esc($ord['wa_buyer']) ?></small>
+                  <?php endif; ?>
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark border"><?= esc($ord['platform_nama']) ?></span>
+                  <strong><?= esc($ord['layanan_nama']) ?></strong>
+                </td>
+                <td style="max-width:240px">
+                  <span class="text-break small"><?= esc($ord['target']) ?></span>
+                </td>
+                <td><strong><?= number_format($ord['jumlah'], 0, ',', '.') ?></strong></td>
+                <td><span class="text-success fw-bold">Rp <?= number_format($ord['harga'], 0, ',', '.') ?></span></td>
+                <td>
+                  <?php if (!empty($ord['provider_order_id'])): ?>
+                    <span class="badge bg-primary font-monospace">#<?= esc($ord['provider_order_id']) ?></span>
+                  <?php else: ?>
+                    <span class="badge bg-danger">Failed / No ID</span>
+                  <?php endif; ?>
+                </td>
+                <td>
+                  <?php 
+                    $badgeClass = 'bg-secondary';
+                    if ($ord['status_order'] === 'processing') $badgeClass = 'bg-warning text-dark';
+                    if ($ord['status_order'] === 'completed')  $badgeClass = 'bg-success';
+                    if ($ord['status_order'] === 'failed')     $badgeClass = 'bg-danger';
+                  ?>
+                  <span class="badge <?= $badgeClass ?>"><?= strtoupper($ord['status_order']) ?></span>
+                </td>
+                <td>
+                  <small class="text-muted"><?= date('d M Y, H:i', strtotime($ord['created_at'])) ?></small>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
             <tr>
-              <td><?= $i + 1 ?></td>
-              <td><span class="badge badge-plat"><?= esc($p['platform_nama']) ?></span></td>
-              <td><strong><?= esc($p['layanan_nama']) ?></strong></td>
-              <td><?= number_format($p['jumlah'], 0, ',', '.') ?></td>
-              <td><span class="fw-bold" style="color:#047857;">Rp <?= number_format($p['harga'], 0, ',', '.') ?></span></td>
-              <td class="text-end">
-                <a href="<?= site_url('admin/sosmed/paket/edit/' . $p['id']) ?>" class="btn btn-sm btn-outline-accent">Edit</a>
-              </td>
+              <td colspan="8" class="text-center py-4 text-muted">Belum ada pesanan otomatis yang tercatat.</td>
             </tr>
-          <?php endforeach; ?>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
-  <?php else: ?>
-    <div class="text-center py-5 text-muted-2">
-      Belum ada paket. <a href="<?= site_url('admin/sosmed/paket/create') ?>" class="fw-bold text-decoration-underline">Tambah sekarang</a>.
+  </div>
+</div>
+
+<!-- 3. LIST DAFTAR PAKET AKTIF -->
+<div class="card neo-card">
+  <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 fw-bold">🏷️ Konfigurasi Paket &amp; Harga Saat Ini</h5>
+    <div class="d-flex gap-2">
+      <a href="<?= base_url('admin/sosmed/layanan') ?>" class="btn btn-sm btn-outline-dark">Kelola Layanan (Service ID)</a>
+      <a href="<?= base_url('admin/sosmed/paket/create') ?>" class="btn btn-sm btn-dark">+ Tambah Paket</a>
     </div>
-  <?php endif; ?>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Platform</th>
+            <th>Nama Layanan</th>
+            <th>Service ID API</th>
+            <th>Jumlah</th>
+            <th>Harga Jual</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php if (!empty($pakets)): ?>
+            <?php foreach ($pakets as $p): ?>
+              <tr>
+                <td><span class="badge bg-info text-dark"><?= esc($p['platform_nama']) ?></span></td>
+                <td><strong><?= esc($p['layanan_nama']) ?></strong></td>
+                <td>
+                  <span class="badge bg-light text-dark border font-monospace">
+                    <?= !empty($p['provider_service_id']) ? esc($p['provider_service_id']) : '-' ?>
+                  </span>
+                </td>
+                <td><?= number_format($p['jumlah'], 0, ',', '.') ?> pcs</td>
+                <td><strong class="text-success">Rp <?= number_format($p['harga'], 0, ',', '.') ?></strong></td>
+                <td>
+                  <a href="<?= base_url('admin/sosmed/paket/edit/' . $p['id']) ?>" class="btn btn-sm btn-outline-primary">Edit</a>
+                  <a href="<?= base_url('admin/sosmed/paket/delete/' . $p['id']) ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus paket ini?')">Hapus</a>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <?= $this->endSection() ?>

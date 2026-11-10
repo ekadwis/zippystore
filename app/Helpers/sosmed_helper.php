@@ -2,66 +2,102 @@
 
 if (! function_exists('hitung_harga_sosmed')) {
     /**
-     * Hitung estimasi harga custom berdasarkan paket layanan (dinamis).
+     * Hitung harga sosmed berdasarkan rules:
+     * - Khusus Views (min 1.000):
+     *   1k = 2.000
+     *   10k = 15.000
+     *   100k = 110.000 (kelipatan 100k dihitung 110.000 / 100k = 1.100 per 1k)
+     * - Khusus Followers / Likes:
+     *   Sesuai tier paket yang tersedia secara proporsional.
      *
      * @param array $pakets  Array paket layanan (harus berisi ['jumlah','harga']), urut jumlah ASC.
      * @param int   $jumlah  Quantity yang diminta user.
-     * @return array         ['harga'=>int, 'unit'=>float, 'tier'=>string, 'ref'=>array|null]
+     * @param bool  $isViews Apakah tipe layanan ini views
+     * @return array         ['harga'=>int, 'unit'=>float, 'tier'=>string]
      */
-    function hitung_harga_sosmed(array $pakets, int $jumlah): array
+    function hitung_harga_sosmed(array $pakets, int $jumlah, bool $isViews = false): array
     {
-        if (empty($pakets) || $jumlah <= 0) {
-            return ['harga' => 0, 'unit' => 0, 'tier' => '-', 'ref' => null];
+        if ($jumlah <= 0) {
+            return ['harga' => 0, 'unit' => 0, 'tier' => '-'];
         }
 
-        // Index paket by jumlah supaya gampang ambil 100/500/1000
+        // 1. RULES KHUSUS VIEWS
+        if ($isViews) {
+            if ($jumlah < 1000) {
+                return ['harga' => 0, 'unit' => 0, 'tier' => 'invalid_min'];
+            }
+
+            if ($jumlah >= 100000) {
+                // Kelipatan 100k views = 110.000
+                // Misal 150k -> (150.000 / 100.000) * 110.000 = 165.000
+                $harga = ($jumlah / 100000) * 110000;
+                $tier = '>=100k (Rate Rp 110.000 / 100k)';
+            } elseif ($jumlah >= 10000) {
+                // Di antara 10k s/d 99.999 -> proporsional dari 10k (15.000 / 10k = 1.500 per 1k)
+                $harga = ($jumlah / 10000) * 15000;
+                $tier = '10k-99k (Rate Rp 15.000 / 10k)';
+            } else {
+                // Di antara 1k s/d 9.999 -> proporsional dari 1k (2.000 / 1k = 2 per view)
+                $harga = ($jumlah / 1000) * 2000;
+                $tier = '1k-9k (Rate Rp 2.000 / 1k)';
+            }
+
+            $harga = (int) (round($harga / 100) * 100);
+            return [
+                'harga' => $harga,
+                'unit'  => round($harga / $jumlah, 4),
+                'tier'  => $tier,
+            ];
+        }
+
+        // 2. RULES PAKET UMUM (Followers / Likes)
         $byJumlah = [];
         foreach ($pakets as $p) {
             $byJumlah[(int) $p['jumlah']] = (float) $p['harga'];
         }
 
-        // Tentukan paket referensi terbesar (basis tier >= 1000) -> ambil paket dgn jumlah terbesar
-        $maxQty   = max(array_keys($byJumlah));
-        $maxHarga = $byJumlah[$maxQty];
-
-        // unit per tier (fallback berjenjang)
-        $unitBesar  = $maxHarga / $maxQty;                                   // basis paket terbesar
-        $unit500    = isset($byJumlah[500]) ? $byJumlah[500] / 500 : $unitBesar;
-        $unit100    = isset($byJumlah[100]) ? $byJumlah[100] / 100 : $unit500;
-
-        if ($jumlah >= 1000 && isset($byJumlah[1000])) {
-            $harga = ($jumlah / 1000) * $byJumlah[1000];
-            $unit  = $byJumlah[1000] / 1000;
-            $tier  = '>=1000 (proporsional paket 1000)';
-        } elseif ($jumlah >= $maxQty) {
-            // untuk layanan berbasis ribuan (Views/Share) yg tidak punya paket 1000
-            $harga = ($jumlah / $maxQty) * $maxHarga;
-            $unit  = $unitBesar;
-            $tier  = ">={$maxQty} (proporsional paket terbesar)";
-        } elseif ($jumlah >= 500) {
-            $harga = $jumlah * $unit500;
-            $unit  = $unit500;
-            $tier  = '500-999';
-        } else { // 100-499
-            $harga = $jumlah * $unit100;
-            $unit  = $unit100;
-            $tier  = '100-499';
+        if (empty($byJumlah)) {
+            return ['harga' => 0, 'unit' => 0, 'tier' => '-'];
         }
 
-        // Bulatkan ke ratusan terdekat
+        // Jika persis ada di paket
+        if (isset($byJumlah[$jumlah])) {
+            return [
+                'harga' => (int) $byJumlah[$jumlah],
+                'unit'  => round($byJumlah[$jumlah] / $jumlah, 2),
+                'tier'  => 'Exact Package',
+            ];
+        }
+
+        // Cari batas atas & bawah yang paling relevan
+        $keys = array_keys($byJumlah);
+        sort($keys);
+        $minKey = min($keys);
+        $maxKey = max($keys);
+
+        if ($jumlah >= $maxKey) {
+            // Proporsional dari paket terbesar
+            $ratePerPcs = $byJumlah[$maxKey] / $maxKey;
+            $harga = $jumlah * $ratePerPcs;
+            $tier = ">={$maxKey} (Proporsional)";
+        } else {
+            // Interpolasi atau cari tier terdekat
+            $chosenRate = $byJumlah[$minKey] / $minKey;
+            foreach ($keys as $k) {
+                if ($jumlah >= $k) {
+                    $chosenRate = $byJumlah[$k] / $k;
+                }
+            }
+            $harga = $jumlah * $chosenRate;
+            $tier = 'Custom Tier';
+        }
+
         $harga = (int) (round($harga / 100) * 100);
 
-        // Paket terdekat untuk perbandingan
-        $ref = null;
-        $bestDiff = PHP_INT_MAX;
-        foreach ($pakets as $p) {
-            $diff = abs((int) $p['jumlah'] - $jumlah);
-            if ($diff < $bestDiff) {
-                $bestDiff = $diff;
-                $ref = $p;
-            }
-        }
-
-        return ['harga' => $harga, 'unit' => round($unit, 2), 'tier' => $tier, 'ref' => $ref];
+        return [
+            'harga' => $harga,
+            'unit'  => round($harga / $jumlah, 2),
+            'tier'  => $tier,
+        ];
     }
 }

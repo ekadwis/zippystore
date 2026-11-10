@@ -6,27 +6,50 @@ use App\Controllers\BaseController;
 use App\Models\SosmedPlatformModel;
 use App\Models\SosmedLayananModel;
 use App\Models\SosmedPaketModel;
+use App\Models\SosmedOrderModel;
+use App\Libraries\SprintpediaService;
 
 class SosmedController extends BaseController
 {
     protected $platformModel;
     protected $layananModel;
     protected $paketModel;
+    protected $orderModel;
 
     public function __construct()
     {
         $this->platformModel = new SosmedPlatformModel();
         $this->layananModel  = new SosmedLayananModel();
         $this->paketModel    = new SosmedPaketModel();
+        $this->orderModel    = new SosmedOrderModel();
         helper(['sosmed', 'url', 'form']);
     }
 
     // ===== DASHBOARD / LIST PAKET =====
     public function index()
     {
+        // Cek Saldo Sprintpedia
+        $sprintpedia = new SprintpediaService();
+        $balRes = $sprintpedia->getBalance();
+        $balance = $balRes['data']['balance'] ?? null;
+
+        $paketsWithInfo = $this->paketModel
+            ->select('sosmed_paket.*, sosmed_layanan.nama AS layanan_nama, sosmed_layanan.provider_service_id, sosmed_platform.nama AS platform_nama')
+            ->join('sosmed_layanan', 'sosmed_layanan.id = sosmed_paket.layanan_id')
+            ->join('sosmed_platform', 'sosmed_platform.id = sosmed_layanan.platform_id')
+            ->orderBy('sosmed_platform.id', 'ASC')
+            ->orderBy('sosmed_layanan.id', 'ASC')
+            ->orderBy('sosmed_paket.jumlah', 'ASC')
+            ->findAll();
+
+        $recentOrders = $this->orderModel->orderBy('id', 'DESC')->findAll(30);
+
         return view('admin/sosmed/index', [
-            'title'  => 'Dashboard Sosmed Boost',
-            'pakets' => $this->paketModel->getWithInfo(),
+            'title'               => 'Dashboard Sosmed Boost',
+            'pakets'              => $paketsWithInfo,
+            'orders'              => $recentOrders,
+            'totalOrdersCount'    => $this->orderModel->countAll(),
+            'sprintpediaBalance'  => $balance,
         ]);
     }
 
@@ -49,32 +72,37 @@ class SosmedController extends BaseController
 
     public function platformSave($id = null)
     {
+        $nama = $this->request->getPost('nama');
+        $slug = url_title($nama, '-', true);
+
         $data = [
-            'nama'      => $this->request->getPost('nama'),
-            'slug'      => url_title($this->request->getPost('slug') ?: $this->request->getPost('nama'), '-', true),
-            'icon'      => $this->request->getPost('icon'),
+            'nama'      => $nama,
+            'slug'      => $slug,
+            'icon'      => $this->request->getPost('icon') ?? '',
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
         ];
+
         if ($id) {
             $this->platformModel->update($id, $data);
+            return redirect()->to(base_url('admin/sosmed/platform'))->with('msg', 'Platform berhasil diupdate');
         } else {
+            $data['created_at'] = date('Y-m-d H:i:s');
             $this->platformModel->insert($data);
+            return redirect()->to(base_url('admin/sosmed/platform'))->with('msg', 'Platform berhasil ditambahkan');
         }
-        return redirect()->to(site_url('admin/sosmed/platform'))->with('success', 'Platform tersimpan.');
     }
 
     public function platformDelete($id)
     {
-        // soft delete
-        $this->platformModel->update($id, ['is_active' => 0]);
-        return redirect()->to(site_url('admin/sosmed/platform'))->with('success', 'Platform dinonaktifkan.');
+        $this->platformModel->delete($id);
+        return redirect()->to(base_url('admin/sosmed/platform'))->with('msg', 'Platform berhasil dihapus');
     }
 
     // ============ LAYANAN ============
     public function layanan()
     {
         return view('admin/sosmed/layanan', [
-            'title'    => 'Kelola Layanan',
+            'title'    => 'Kelola Layanan Sosmed',
             'layanans' => $this->layananModel->getWithPlatform(),
         ]);
     }
@@ -90,41 +118,41 @@ class SosmedController extends BaseController
 
     public function layananSave($id = null)
     {
-        $min = (int) $this->request->getPost('min_order');
-        $max = (int) $this->request->getPost('max_order');
-
-        // validasi min/max
-        if ($max < $min) {
-            return redirect()->back()->withInput()->with('error', 'max_order harus >= min_order.');
-        }
+        $nama = $this->request->getPost('nama');
+        $slug = url_title($nama, '-', true);
 
         $data = [
-            'platform_id' => (int) $this->request->getPost('platform_id'),
-            'nama'        => $this->request->getPost('nama'),
-            'slug'        => url_title($this->request->getPost('slug') ?: $this->request->getPost('nama'), '-', true),
-            'min_order'   => $min,
-            'max_order'   => $max,
-            'is_active'   => $this->request->getPost('is_active') ? 1 : 0,
+            'platform_id'             => $this->request->getPost('platform_id'),
+            'nama'                    => $nama,
+            'slug'                    => $slug,
+            'provider_service_id'     => $this->request->getPost('provider_service_id'),
+            'provider_service_id_alt' => $this->request->getPost('provider_service_id_alt'),
+            'min_order'               => (int)$this->request->getPost('min_order'),
+            'max_order'               => (int)$this->request->getPost('max_order'),
+            'is_active'               => $this->request->getPost('is_active') ? 1 : 0,
         ];
+
         if ($id) {
             $this->layananModel->update($id, $data);
+            return redirect()->to(base_url('admin/sosmed/layanan'))->with('msg', 'Layanan berhasil diupdate');
         } else {
+            $data['created_at'] = date('Y-m-d H:i:s');
             $this->layananModel->insert($data);
+            return redirect()->to(base_url('admin/sosmed/layanan'))->with('msg', 'Layanan berhasil ditambahkan');
         }
-        return redirect()->to(site_url('admin/sosmed/layanan'))->with('success', 'Layanan tersimpan.');
     }
 
     public function layananDelete($id)
     {
-        $this->layananModel->update($id, ['is_active' => 0]);
-        return redirect()->to(site_url('admin/sosmed/layanan'))->with('success', 'Layanan dinonaktifkan.');
+        $this->layananModel->delete($id);
+        return redirect()->to(base_url('admin/sosmed/layanan'))->with('msg', 'Layanan berhasil dihapus');
     }
 
     // ============ PAKET ============
     public function paket()
     {
         return view('admin/sosmed/paket', [
-            'title'  => 'Kelola Paket',
+            'title'  => 'Kelola Paket Sosmed',
             'pakets' => $this->paketModel->getWithInfo(),
         ]);
     }
@@ -140,78 +168,35 @@ class SosmedController extends BaseController
 
     public function paketSave($id = null)
     {
-        $jumlah = (int) $this->request->getPost('jumlah');
-        $harga  = (int) $this->request->getPost('harga');
-
-        if ($jumlah <= 0 || $harga < 0) {
-            return redirect()->back()->withInput()->with('error', 'Jumlah harus > 0 dan harga tidak boleh negatif.');
-        }
-
         $data = [
-            'layanan_id' => (int) $this->request->getPost('layanan_id'),
-            'jumlah'     => $jumlah,
-            'harga'      => $harga,
+            'layanan_id' => $this->request->getPost('layanan_id'),
+            'jumlah'     => (int)$this->request->getPost('jumlah'),
+            'harga'      => (float)$this->request->getPost('harga'),
             'is_active'  => $this->request->getPost('is_active') ? 1 : 0,
         ];
+
         if ($id) {
             $this->paketModel->update($id, $data);
+            return redirect()->to(base_url('admin/sosmed/paket'))->with('msg', 'Paket berhasil diupdate');
         } else {
+            $data['created_at'] = date('Y-m-d H:i:s');
             $this->paketModel->insert($data);
+            return redirect()->to(base_url('admin/sosmed/paket'))->with('msg', 'Paket berhasil ditambahkan');
         }
-        return redirect()->to(site_url('admin/sosmed/paket'))->with('success', 'Paket tersimpan.');
     }
 
     public function paketDelete($id)
     {
-        $this->paketModel->update($id, ['is_active' => 0]);
-        return redirect()->to(site_url('admin/sosmed/paket'))->with('success', 'Paket dinonaktifkan.');
+        $this->paketModel->delete($id);
+        return redirect()->to(base_url('admin/sosmed/paket'))->with('msg', 'Paket berhasil dihapus');
     }
 
     // ============ KALKULATOR ============
     public function kalkulator()
     {
         return view('admin/sosmed/kalkulator', [
-            'title'     => 'Kalkulator Harga Custom',
-            'platforms' => $this->platformModel->getActive(),
-            'layanans'  => $this->layananModel->getWithPlatform(true),
-        ]);
-    }
-
-    public function kalkulatorHitung()
-    {
-        $layananId = (int) $this->request->getPost('layanan_id');
-        $jumlah    = (int) $this->request->getPost('jumlah');
-
-        $layanan = $this->layananModel->find($layananId);
-        if (! $layanan) {
-            return $this->response->setJSON(['ok' => false, 'msg' => 'Layanan tidak ditemukan.']);
-        }
-
-        // validasi min/max
-        if ($jumlah < (int) $layanan['min_order'] || $jumlah > (int) $layanan['max_order']) {
-            return $this->response->setJSON([
-                'ok'  => false,
-                'msg' => "Jumlah harus antara {$layanan['min_order']} - {$layanan['max_order']}.",
-            ]);
-        }
-
-        $pakets = $this->paketModel->getByLayanan($layananId);
-        if (empty($pakets)) {
-            return $this->response->setJSON(['ok' => false, 'msg' => 'Belum ada paket untuk layanan ini.']);
-        }
-
-        $hasil = hitung_harga_sosmed($pakets, $jumlah);
-
-        return $this->response->setJSON([
-            'ok'        => true,
-            'harga'     => $hasil['harga'],
-            'harga_fmt' => 'Rp ' . number_format($hasil['harga'], 0, ',', '.'),
-            'tier'      => $hasil['tier'],
-            'unit'      => $hasil['unit'],
-            'ref'       => $hasil['ref'] ? [
-                'jumlah' => (int) $hasil['ref']['jumlah'],
-                'harga'  => 'Rp ' . number_format((int) $hasil['ref']['harga'], 0, ',', '.'),
-            ] : null,
+            'title'    => 'Kalkulator Harga Sosmed',
+            'layanans' => $this->layananModel->getWithPlatform(true),
         ]);
     }
 }

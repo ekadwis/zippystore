@@ -286,6 +286,19 @@ class TelegramChannel
     }
 
     /**
+     * Kirim notifikasi pesan teks ke channel / admin Telegram
+     */
+    public function sendMessage(string $text, ?string $chatId = null): array
+    {
+        $targetChatId = $chatId ?: $this->channelId;
+        return $this->callApi('sendMessage', [
+            'chat_id'    => $targetChatId,
+            'text'       => $text,
+            'parse_mode' => 'Markdown',
+        ]);
+    }
+
+    /**
      * Cek apakah Bot API tersedia (token valid)
      */
     public function isConfigured(): bool

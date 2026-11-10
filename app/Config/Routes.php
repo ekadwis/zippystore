@@ -10,6 +10,11 @@ $routes->get('testimonials/sync-telegram', 'TestimoniController::syncTelegram');
 
 // Telegram Webhook (no auth - called by Telegram servers)
 $routes->post('webhook/telegram', 'TelegramWebhookController::handle');
+
+// Duitku Payment Gateway Webhook Callback (no auth)
+$routes->post('callback', 'PaymentCallbackController::duitku');
+$routes->post('payment/duitku-callback', 'PaymentCallbackController::duitku');
+$routes->get('payment/simulate-pay/(:segment)', 'PaymentCallbackController::simulatePay/$1');
 $routes->get('cara-pesan', 'CaraPesanController::index');
 $routes->get('gallery', 'GalleryController::index');
 $routes->get('sosmed', 'SosmedController::index');
@@ -20,6 +25,8 @@ $routes->get('tutorial', 'TutorialController::index');
 $routes->get('tutorial/gemini-pro', 'TutorialController::geminiPro');
 $routes->get('tutorial/cloudflare-glm', 'TutorialController::cloudflareGlm');
 $routes->post('sosmed/hitung', 'SosmedController::hitung');
+$routes->post('sosmed/order', 'SosmedController::order');
+$routes->get('sosmed/status/(:segment)', 'SosmedController::statusOrder/$1');
 $routes->addRedirect('portfolio', 'cara-pesan');
 
 // Auth
