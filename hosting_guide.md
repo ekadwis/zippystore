@@ -105,3 +105,4 @@ php spark db:seed PromoNovemberSeeder
 
 - **URL Callback Duitku**: `https://zippystore.my.id/callback` (atau `https://zippystore.my.id/payment/duitku-callback`)
 - **URL Webhook Telegram**: `https://zippystore.my.id/webhook/telegram`
+

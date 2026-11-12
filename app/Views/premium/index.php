@@ -131,12 +131,13 @@ $itemsRender = !empty($struktur) ? $struktur : $defaultProduk;
               <ul class="list-unstyled mb-0">
                 <?php foreach ($blok['durasi'] as $d): ?>
                   <?php
+                    $isCanva = stripos($blok['produk']['nama'], 'canva') !== false;
                     $teks = $blok['produk']['nama'] . ' - ' . $d['label'];
                     $pesan = "Halo Zippy Store, saya mau pesan Akun Premium:%0A" .
                              "*" . rawurlencode($teks) . "*%0A" .
                              "Harga: Rp " . number_format($d['harga'], 0, ',', '.') . "%0A%0A" .
                              "Mohon info rekening/QRIS untuk pembayarannya. Terima kasih!";
-                    $waLink = "https://wa.me/{$waNumber}?text={$pesan}";
+                    $orderLink = $isCanva ? base_url('premium/canva') : "https://wa.me/{$waNumber}?text={$pesan}";
                   ?>
                   <li class="price-item-row">
                     <span class="small fw-bold">
@@ -146,8 +147,8 @@ $itemsRender = !empty($struktur) ? $struktur : $defaultProduk;
                       <span class="fw-bold" style="font-family:var(--font-display);font-size:15px">
                         Rp <?= number_format($d['harga'], 0, ',', '.') ?>
                       </span>
-                      <a href="<?= $waLink ?>" target="_blank" rel="noopener" class="btn btn-sm btn-accent py-1 px-3" style="background:var(--accent-app);font-size:12px">
-                        Order
+                      <a href="<?= $orderLink ?>" <?= $isCanva ? '' : 'target="_blank" rel="noopener"' ?> class="btn btn-sm btn-accent py-1 px-3" style="background:var(--accent-app);font-size:12px">
+                        <?= $isCanva ? '⚡ Auto Order' : 'Order' ?>
                       </a>
                     </span>
                   </li>

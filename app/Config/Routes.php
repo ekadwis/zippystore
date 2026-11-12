@@ -20,6 +20,10 @@ $routes->get('gallery', 'GalleryController::index');
 $routes->get('sosmed', 'SosmedController::index');
 $routes->get('joki', 'JokiController::index');
 $routes->get('premium', 'PremiumController::index');
+$routes->get('premium/canva', 'CanvaOrderController::index');
+$routes->post('premium/canva/order', 'CanvaOrderController::submit');
+$routes->get('premium/canva/status/(:segment)', 'CanvaOrderController::checkStatus/$1');
+$routes->get('premium/canva/simulate-pay/(:segment)', 'CanvaOrderController::simulatePay/$1');
 $routes->get('otp', 'OtpController::index');
 $routes->get('tutorial', 'TutorialController::index');
 $routes->get('tutorial/gemini-pro', 'TutorialController::geminiPro');
@@ -111,6 +115,12 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
         $routes->post('durasi/save',        'Admin\PremiumController::durasiSave');
         $routes->post('durasi/save/(:num)', 'Admin\PremiumController::durasiSave/$1');
         $routes->get('durasi/delete/(:num)','Admin\PremiumController::durasiDelete/$1');
+    });
+
+    // Canva PRO EDU Admin (Update Link Mingguan & Riwayat Order)
+    $routes->group('canva', static function ($routes) {
+        $routes->get('/',     'Admin\CanvaAdminController::index');
+        $routes->post('save', 'Admin\CanvaAdminController::saveSettings');
     });
 
     $routes->group('otp', static function ($routes) {

@@ -4,8 +4,11 @@ namespace App\Controllers;
 
 use App\Models\SosmedOrderModel;
 use App\Models\SosmedLayananModel;
+use App\Models\CanvaOrderModel;
+use App\Models\CanvaSettingModel;
 use App\Libraries\PaymentGateway\DuitkuService;
 use App\Libraries\SprintpediaService;
+use App\Libraries\MailerService;
 
 class PaymentCallbackController extends BaseController
 {
@@ -33,11 +36,86 @@ class PaymentCallbackController extends BaseController
         $resultCode = $postData['resultCode'] ?? '';
         $reference  = $postData['reference'] ?? '';
 
-        return $this->processOrderFulfillment($orderCode, $resultCode, $reference);
+        // Deteksi Tipe Order (Canva vs Sosmed)
+        if (str_starts_with($orderCode, 'ZP-CNV-')) {
+            return $this->processCanvaFulfillment($orderCode, $resultCode, $reference);
+        }
+
+        return $this->processSosmedFulfillment($orderCode, $resultCode, $reference);
     }
 
     /**
-     * Endpoint Simulasi Bayar untuk Mode Sandbox
+     * Pemenuhan Order Canva PRO EDU (Kirim Email Undangan Otomatis)
+     */
+    protected function processCanvaFulfillment(string $orderCode, string $resultCode, string $reference)
+    {
+        $canvaModel = new CanvaOrderModel();
+        $order = $canvaModel->findByCode($orderCode);
+
+        if (!$order) {
+            return $this->response->setStatusCode(404)->setBody('Order Not Found');
+        }
+
+        if ($resultCode === '00') {
+            if ($order['status_pembayaran'] === 'paid') {
+                return $this->response->setBody('OK');
+            }
+
+            $settings   = (new CanvaSettingModel())->getSettings();
+            $inviteLink = $settings['invite_link'];
+            $teamName   = $settings['team_name'] ?: 'AEZ Team';
+
+            // Kirim Email Otomatis
+            $mailRes = MailerService::sendCanvaInvite(
+                $order['customer_email'],
+                $order['order_code'],
+                $order['durasi_label'],
+                $inviteLink,
+                $teamName
+            );
+
+            $statusEmail = $mailRes['success'] ? 'sent' : 'failed';
+            $emailError  = $mailRes['error'];
+
+            $canvaModel->update($order['id'], [
+                'status_pembayaran' => 'paid',
+                'status_email'      => $statusEmail,
+                'email_error'       => $emailError,
+                'invite_link_sent'  => $inviteLink,
+                'payment_reference' => $reference,
+                'catatan'           => $mailRes['success'] 
+                                        ? "Pembayaran QRIS sukses & email link invite berhasil terkirim ke {$order['customer_email']}"
+                                        : "Pembayaran sukses, namun gagal kirim email via SMTP",
+            ]);
+
+            // Kirim Notifikasi ke Telegram Admin
+            try {
+                $tg = new \App\Libraries\TelegramChannel();
+                if ($tg->isConfigured()) {
+                    $msg  = "🎨 *ORDER CANVA PRO EDU MASUK & LUNAS!*\n\n";
+                    $msg .= "• *Kode Order:* `{$order['order_code']}`\n";
+                    $msg .= "• *Paket:* {$order['durasi_label']}\n";
+                    $msg .= "• *Email Customer:* `{$order['customer_email']}`\n";
+                    $msg .= "• *Total Bayar:* Rp " . number_format($order['harga'], 0, ',', '.') . " (PAID via QRIS)\n";
+                    $msg .= "• *Status Email Invite:* " . strtoupper($statusEmail) . "\n\n";
+                    $msg .= "🌐 _Zippy Store Auto Fulfillment System_";
+                    $tg->sendMessage($msg);
+                }
+            } catch (\Throwable $e) {}
+
+            return $this->response->setBody('OK');
+        }
+
+        $canvaModel->update($order['id'], [
+            'status_pembayaran' => 'expired',
+            'catatan'           => 'Pembayaran dibatalkan atau waktu habis',
+        ]);
+
+        return $this->response->setBody('OK');
+    }
+
+    /**
+     * Endpoint Simulasi Bayar untuk Mode Sandbox Sosmed
      */
     public function simulatePay($orderCode)
     {
@@ -48,7 +126,7 @@ class PaymentCallbackController extends BaseController
             return $this->response->setJSON(['ok' => false, 'msg' => 'Order tidak ditemukan.']);
         }
 
-        $res = $this->processOrderFulfillment($orderCode, '00', 'SIMULASI-DUITKU-' . time());
+        $res = $this->processSosmedFulfillment($orderCode, '00', 'SIMULASI-DUITKU-' . time());
 
         return $this->response->setJSON([
             'ok'      => true,
@@ -60,7 +138,7 @@ class PaymentCallbackController extends BaseController
     /**
      * Logika utama proses bayar -> eksekusi Sprintpedia API (Single & Massal)
      */
-    protected function processOrderFulfillment(string $orderCode, string $resultCode, string $reference)
+    protected function processSosmedFulfillment(string $orderCode, string $resultCode, string $reference)
     {
         $orderModel = new SosmedOrderModel();
         $order = $orderModel->findByCode($orderCode);
@@ -70,7 +148,6 @@ class PaymentCallbackController extends BaseController
         }
 
         if ($resultCode === '00') {
-            // Cegah double fulfillment
             if ($order['status_pembayaran'] === 'paid' && !empty($order['provider_order_id'])) {
                 return $this->response->setBody('OK');
             }
@@ -82,7 +159,7 @@ class PaymentCallbackController extends BaseController
 
             $sprintpedia = new SprintpediaService();
 
-            // KASUS 1: ORDER MASSAL (BATCH)
+            // ORDER MASSAL (BATCH)
             if (!empty($order['is_mass']) && !empty($order['mass_data'])) {
                 $massList = json_decode($order['mass_data'], true) ?: [];
                 $dispatchedList = [];
@@ -118,7 +195,7 @@ class PaymentCallbackController extends BaseController
                 $updateData['provider_response'] = json_encode(['batch_results' => $dispatchedList]);
                 $updateData['catatan']           = "Order massal (" . count($successIds) . " sukses, " . $failedCount . " gagal kirim)";
             } 
-            // KASUS 2: ORDER SINGLE (1 TARGET)
+            // ORDER SINGLE
             else {
                 $serviceId = $order['provider_service_id'];
                 $apiResult = $sprintpedia->addOrder($serviceId, $order['target'], (int)$order['jumlah']);
@@ -128,7 +205,6 @@ class PaymentCallbackController extends BaseController
                     $updateData['status_order']      = 'processing';
                     $updateData['catatan']           = 'Pembayaran QRIS sukses & otomatis diproses di server';
                 } else {
-                    // Alternatif jika ada
                     $layananModel = new SosmedLayananModel();
                     $layanan = $layananModel->find($order['layanan_id']);
 

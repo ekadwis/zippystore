@@ -27,7 +27,8 @@
     <div class="sb-label">Layanan</div>
     <nav class="nav flex-column">
       <a class="nav-link <?= str_contains($current,'admin/sosmed') ? 'active' : '' ?>" href="<?= site_url('admin/sosmed') ?>">🚀 Sosmed Boost</a>
-      <a class="nav-link <?= str_contains($current,'admin/premium') ? 'active' : '' ?>" href="<?= site_url('admin/premium') ?>">🎬 App Premium</a>
+      <a class="nav-link <?= str_contains($current,'admin/premium') || str_contains($current,'admin/canva') ? 'active' : '' ?>" href="<?= site_url('admin/premium') ?>">🎬 App Premium</a>
+      <a class="nav-link <?= str_contains($current,'admin/canva') ? 'active' : '' ?>" href="<?= site_url('admin/canva') ?>">🎨 Link Canva PRO</a>
       <a class="nav-link <?= str_contains($current,'admin/otp') ? 'active' : '' ?>" href="<?= site_url('admin/otp') ?>">📱 Nomor OTP</a>
     </nav>
 

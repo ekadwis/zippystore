@@ -95,3 +95,4 @@ class PromoNovemberSeeder extends Seeder
         echo "Tabel Promo berhasil disinkronkan.\n";
     }
 }
+
