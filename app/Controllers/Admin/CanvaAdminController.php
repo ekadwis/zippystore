@@ -48,3 +48,4 @@ class CanvaAdminController extends BaseController
         return redirect()->to(site_url('admin/canva'))->with('success', 'Link undangan Canva berhasil diperbarui!');
     }
 }
+

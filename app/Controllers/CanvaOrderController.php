@@ -50,12 +50,12 @@ class CanvaOrderController extends BaseController
      */
     public function submit()
     {
-        $emailCustomer = trim($this->request->getPost('email') ?? '');
-        $waCustomer    = trim($this->request->getPost('wa') ?? '');
+        $emailCustomer = trim($this->request->getPost('customer_email') ?? $this->request->getPost('email') ?? '');
+        $waCustomer    = trim($this->request->getPost('customer_wa') ?? $this->request->getPost('wa') ?? '');
         $durasiBulan   = (int)$this->request->getPost('durasi_bulan');
 
         if (empty($emailCustomer) || !filter_var($emailCustomer, FILTER_VALIDATE_EMAIL)) {
-            return $this->response->setJSON(['ok' => false, 'msg' => 'Email Canva yang valid wajib diisi.']);
+            return $this->response->setJSON(['status' => false, 'message' => 'Email Canva yang valid wajib diisi.']);
         }
 
         $hargaMap = [
@@ -66,7 +66,7 @@ class CanvaOrderController extends BaseController
         ];
 
         if (!isset($hargaMap[$durasiBulan])) {
-            return $this->response->setJSON(['ok' => false, 'msg' => 'Pilihan durasi tidak valid.']);
+            return $this->response->setJSON(['status' => false, 'message' => 'Pilihan durasi tidak valid.']);
         }
 
         $selected = $hargaMap[$durasiBulan];
@@ -116,14 +116,21 @@ class CanvaOrderController extends BaseController
             'catatan'           => 'Menunggu pembayaran QRIS untuk aktivasi Canva PRO EDU',
         ]);
 
+        $qrImage = $qrString ? 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . urlencode($qrString) : null;
+
         return $this->response->setJSON([
-            'ok'          => true,
-            'order_code'  => $orderCode,
-            'payment_url' => $paymentUrl,
-            'qr_string'   => $qrString,
-            'harga_fmt'   => 'Rp ' . number_format($selected['harga'], 0, ',', '.'),
-            'durasi'      => $selected['label'],
-            'email'       => $emailCustomer,
+            'status'            => true,
+            'ok'                => true,
+            'order_code'        => $orderCode,
+            'payment_url'       => $paymentUrl,
+            'qr_string'         => $qrString,
+            'qr_image'          => $qrImage,
+            'harga'             => $selected['harga'],
+            'harga_fmt'         => 'Rp ' . number_format($selected['harga'], 0, ',', '.'),
+            'durasi'            => $selected['label'],
+            'customer_email'    => $emailCustomer,
+            'email'             => $emailCustomer,
+            'message'           => 'Pesanan berhasil dibuat',
         ]);
     }
 
@@ -134,15 +141,20 @@ class CanvaOrderController extends BaseController
     {
         $order = $this->orderModel->findByCode($orderCode);
         if (!$order) {
-            return $this->response->setJSON(['ok' => false, 'msg' => 'Order tidak ditemukan.']);
+            return $this->response->setJSON(['status' => false, 'ok' => false, 'message' => 'Order tidak ditemukan.']);
         }
 
+        $isPaid = in_array(strtolower($order['status_pembayaran']), ['paid', 'success', 'sukses']);
+
         return $this->response->setJSON([
+            'status'            => true,
             'ok'                => true,
             'order_code'        => $order['order_code'],
-            'status_pembayaran' => $order['status_pembayaran'],
+            'status_pembayaran' => $isPaid ? 'PAID' : $order['status_pembayaran'],
             'status_email'      => $order['status_email'],
-            'invite_link'       => ($order['status_pembayaran'] === 'paid') ? $order['invite_link_sent'] : null,
+            'customer_email'    => $order['customer_email'],
+            'team_name'         => 'AEZ Team',
+            'invite_link'       => $isPaid ? $order['invite_link_sent'] : null,
             'catatan'           => $order['catatan'],
         ]);
     }
@@ -154,45 +166,52 @@ class CanvaOrderController extends BaseController
     {
         $order = $this->orderModel->findByCode($orderCode);
         if (!$order) {
-            return $this->response->setJSON(['ok' => false, 'msg' => 'Order tidak ditemukan.']);
-        }
-
-        if ($order['status_pembayaran'] === 'paid') {
-            return $this->response->setJSON(['ok' => true, 'msg' => 'Order sudah lunas sebelumnya.']);
+            return $this->response->setJSON(['status' => false, 'ok' => false, 'message' => 'Order tidak ditemukan.']);
         }
 
         $settings = $this->settingModel->getSettings();
         $inviteLink = $settings['invite_link'];
         $teamName   = $settings['team_name'] ?: 'AEZ Team';
 
-        // 1. Kirim Email Undangan Otomatis
-        $mailRes = MailerService::sendCanvaInvite(
-            $order['customer_email'],
-            $order['order_code'],
-            $order['durasi_label'],
-            $inviteLink,
-            $teamName
-        );
+        if (strtolower($order['status_pembayaran']) !== 'paid') {
+            // 1. Kirim Email Undangan Otomatis
+            $mailRes = MailerService::sendCanvaInvite(
+                $order['customer_email'],
+                $order['order_code'],
+                $order['durasi_label'],
+                $inviteLink,
+                $teamName
+            );
 
-        $statusEmail = $mailRes['success'] ? 'sent' : 'failed';
-        $emailError  = $mailRes['error'];
+            $statusEmail = $mailRes['success'] ? 'sent' : 'failed';
+            $emailError  = $mailRes['error'];
 
-        // 2. Update Database
-        $this->orderModel->update($order['id'], [
-            'status_pembayaran' => 'paid',
-            'status_email'      => $statusEmail,
-            'email_error'       => $emailError,
-            'invite_link_sent'  => $inviteLink,
-            'payment_reference' => 'SIMULASI-CANVA-' . time(),
-            'catatan'           => $mailRes['success'] 
-                                    ? "Pembayaran sukses & email link invite berhasil terkirim ke {$order['customer_email']}"
-                                    : "Pembayaran sukses, namun gagal kirim email (cek kredensial SMTP)",
-        ]);
+            // 2. Update Database
+            $this->orderModel->update($order['id'], [
+                'status_pembayaran' => 'paid',
+                'status_email'      => $statusEmail,
+                'email_error'       => $emailError,
+                'invite_link_sent'  => $inviteLink,
+                'payment_reference' => 'SIMULASI-CANVA-' . time(),
+                'catatan'           => $mailRes['success'] 
+                                        ? "Pembayaran sukses & email link invite berhasil terkirim ke {$order['customer_email']}"
+                                        : "Pembayaran sukses, namun gagal kirim email (cek kredensial SMTP)",
+            ]);
+        } else {
+            $statusEmail = $order['status_email'];
+        }
 
         return $this->response->setJSON([
-            'ok'           => true,
-            'msg'          => 'Simulasi pembayaran Canva berhasil diverifikasi!',
-            'email_status' => $statusEmail,
+            'status'            => true,
+            'ok'                => true,
+            'status_pembayaran' => 'PAID',
+            'order_code'        => $order['order_code'],
+            'customer_email'    => $order['customer_email'],
+            'team_name'         => $teamName,
+            'invite_link'       => $inviteLink,
+            'message'           => 'Simulasi pembayaran Canva berhasil diverifikasi!',
+            'email_status'      => $statusEmail,
         ]);
     }
 }
+

@@ -59,3 +59,4 @@ class CanvaInitSeeder extends Seeder
         $db->table('premium_durasi')->insertBatch($durasiList);
     }
 }
+

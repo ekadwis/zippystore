@@ -41,3 +41,4 @@ class CanvaOrderModel extends Model
         return $this->where('order_code', $code)->first();
     }
 }
+

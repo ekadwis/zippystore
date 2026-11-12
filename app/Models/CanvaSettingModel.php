@@ -36,3 +36,4 @@ class CanvaSettingModel extends Model
         return $res;
     }
 }
+
